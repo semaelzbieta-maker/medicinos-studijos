@@ -10,6 +10,7 @@
   --heart:#c2414b; --heart-soft:#f8e1e3;
   --lung:#2f62a8; --lung-soft:#e0eaf8;
   --mark:#ffe58a; --mark-ink:#2b2200;
+  --hero:#18231f; --hero-ink:#f3f5f2; --hero-hl:#ffd75e;
   --good:#2f8a4e; --good-soft:#ddf2e3; --bad:#c2414b; --bad-soft:#f8e1e3; --warn:#b07a12; --warn-soft:#fbefd2;
   --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
@@ -19,15 +20,35 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#101614; --surface:#17201d; --ink:#e6eeea; --muted:#9aaaa3; --line:#2a3632;
   --scrub:#5fc4ad; --scrub-soft:#173a33; --heart:#f0848c; --heart-soft:#3e1d21; --lung:#86b0ee; --lung-soft:#1b2a42;
-  --mark:#6b5a12; --mark-ink:#fff5cc; --good:#6fd08f; --good-soft:#18361f; --bad:#f0848c; --bad-soft:#3e1d21; --warn:#e7b858; --warn-soft:#3a2d10;
+  --mark:#6b5a12; --mark-ink:#fff5cc; --hero:#1d2a26; --hero-ink:#eef4f1; --hero-hl:#ffd75e; --good:#6fd08f; --good-soft:#18361f; --bad:#f0848c; --bad-soft:#3e1d21; --warn:#e7b858; --warn-soft:#3a2d10;
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#101614; --surface:#17201d; --ink:#e6eeea; --muted:#9aaaa3; --line:#2a3632;
   --scrub:#5fc4ad; --scrub-soft:#173a33; --heart:#f0848c; --heart-soft:#3e1d21; --lung:#86b0ee; --lung-soft:#1b2a42;
-  --mark:#6b5a12; --mark-ink:#fff5cc; --good:#6fd08f; --good-soft:#18361f; --bad:#f0848c; --bad-soft:#3e1d21; --warn:#e7b858; --warn-soft:#3a2d10;
+  --mark:#6b5a12; --mark-ink:#fff5cc; --hero:#1d2a26; --hero-ink:#eef4f1; --hero-hl:#ffd75e; --good:#6fd08f; --good-soft:#18361f; --bad:#f0848c; --bad-soft:#3e1d21; --warn:#e7b858; --warn-soft:#3a2d10;
   color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;background-image:radial-gradient(900px 380px at 85% -120px,var(--heart-soft),transparent 70%),radial-gradient(800px 360px at -10% -80px,var(--scrub-soft),transparent 70%);background-repeat:no-repeat}
+.hero{position:relative;border-radius:22px;padding:22px 20px 0;margin-bottom:20px;background:var(--hero);color:var(--hero-ink);overflow:hidden;border:1px solid var(--line)}
+.hero .hi{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.7}
+.hero h2{font-size:30px;font-weight:800;margin-top:6px;letter-spacing:-.01em}
+.hero h2 em{font-style:normal;color:var(--hero-hl)}
+.hero p{margin:6px 0 0;font-size:14px;opacity:.85;max-width:34em}
+.hero .stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.hero .stats span{font-size:12px;padding:4px 10px;border-radius:999px;background:color-mix(in srgb,var(--hero-ink) 12%,transparent);border:1px solid color-mix(in srgb,var(--hero-ink) 22%,transparent)}
+.hero .stats b{font-family:var(--display)}
+.ecg{display:block;width:calc(100% + 40px);margin:14px -20px 0;height:56px}
+.ecg path{fill:none;stroke:var(--heart);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:1400;stroke-dashoffset:0;animation:beat 3.2s ease-in-out 1}
+@keyframes beat{from{stroke-dashoffset:1400}to{stroke-dashoffset:0}}
+.mode .ico{width:22px;height:22px;color:var(--muted)}
+.mode[aria-pressed="true"] .ico{color:var(--scrub)}
+.mode .row1{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.mode{transition:transform .15s,border-color .15s}
+.mode:hover{transform:translateY(-2px);border-color:var(--scrub)}
+.mod{transition:transform .15s,border-color .15s,box-shadow .15s}
+.mod:hover{transform:translateY(-2px);box-shadow:0 10px 30px -18px var(--scrub)}
+.mod .trace{position:absolute;right:-10px;top:40px;width:200px;height:70px;opacity:.12;pointer-events:none}
+.mod .trace path{fill:none;stroke:var(--heart);stroke-width:3}
 .wrap{max-width:820px;margin:0 auto;padding-block:20px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;line-height:1.15;margin:0}
 button{font:inherit;color:inherit;cursor:pointer}
@@ -49,6 +70,20 @@ mark,.hl{background:var(--mark);color:var(--mark-ink);padding:0 .2em;border-radi
 .modes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:22px}
 @media (max-width:560px){.modes{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .mode.prog b{color:var(--scrub)}
+/* modules */
+.mods{display:grid;gap:14px}
+.mod{display:block;width:100%;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:20px;position:relative;overflow:hidden}
+.mod::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;background:linear-gradient(90deg,var(--scrub) 0 33.3%,var(--heart) 33.3% 66.6%,var(--lung) 66.6% 100%)}
+.mod .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.mod .due{background:var(--scrub-soft);color:var(--scrub);padding:2px 8px;border-radius:999px;letter-spacing:.04em}
+.mod .due.late{background:var(--bad-soft);color:var(--bad)}
+.mod h2{font-size:24px;font-weight:800;margin-top:10px;line-height:1.15}
+.mod .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.mod .meta span{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line)}
+.mod .foot{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-top:16px}
+.mod .foot b{font-family:var(--display);font-size:20px;color:var(--scrub);font-variant-numeric:tabular-nums}
+.mod .foot .sbar{margin:0}
+.mod:hover{border-color:var(--scrub)}
 /* progress */
 .p-hero{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;margin-bottom:14px}
 .p-big{font-family:var(--display);font-size:52px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:var(--scrub)}
@@ -195,14 +230,14 @@ figcaption{font-size:13px;color:var(--muted);margin-top:8px}
 .result h3{font-size:22px}
 .result p{margin:6px 0 0;opacity:.85}
 @media (max-width:520px){.modes .mode b{font-size:14px}.flash .q{font-size:19px}.topic-head h2{font-size:21px}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
 <div class="wrap" id="app">
   <header class="top">
     <div class="brand">
       <div class="logo" aria-hidden="true">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/><path d="M6 12h3l1.5-2.5L13 15l1.5-3H18"/></svg>
       </div>
       <div><small>Konspektai · kortelės · testai</small><h1>Tik medicinos mergaitė</h1></div>
     </div>
@@ -705,6 +740,13 @@ const AREAS = [
 /* ---------- būsena ---------- */
 const MODES = [{id:"notes",name:"Konspektai",ic:"Skaityti"},{id:"cards",name:"Anki kortelės",ic:"Kartoti"},{id:"test",name:"Testai",ic:"Tikrintis"},{id:"progress",name:"Progresas",ic:"Žymėti"}];
 const STUDY_MODES = MODES.filter(m=>m.id!=="progress");
+const ICO = {
+ notes:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M8 7h6M8 11h6"/></svg>',
+ cards:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="14" height="13" rx="2"/><path d="M7 4h12a2 2 0 0 1 2 2v11"/></svg>',
+ test:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>',
+ progress:'<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>'
+};
+const ECG_PATH = "M0 34 H120 l8 -4 l8 4 H170 l6 8 l10 -40 l10 46 l8 -14 H260 l10 -6 l12 6 H420 l8 -4 l8 4 H470 l6 8 l10 -40 l10 46 l8 -14 H560 l10 -6 l12 6 H720 l8 -4 l8 4 H770 l6 8 l10 -40 l10 46 l8 -14 H860";
 
 /* ---------- DALYKO TEMOS (LSMU aprašas) ---------- */
 const SYL = [
@@ -716,7 +758,16 @@ const SYL = [
   ["3.1","Obstrukcinių plaučių ligų diagnostikos ir gydymo principai"],["3.2","Funkciniai tyrimai kvėpavimo organų ligoms diagnozuoti"],["3.3","Plaučių navikų diagnostikos ir gydymo principai, kraujavimas iš plaučių"],["3.4","Intersticinės plaučių ligos"],["3.5","Ūminės plaučių embolijos diagnostikos ir gydymo principai. Plautinės hipertenzijos diagnostika"],["3.6","Invaziniai tyrimai kvėpavimo organų ligoms diagnozuoti"],["3.7","Respiracinės infekcijos diagnostikos ir gydymo principai"],["3.8","Pleuros ligų diagnostikos ir gydymo principai"],["3.9","Kvėpavimo sutrikimai miegant"],["3.10","Kvėpavimo nepakankamumas"],["3.11","Plaučių ir ekstrapulmoninės tuberkuliozės gydymo principai ir profilaktika"],["3.12","Respiracinių infekcijų ir Mycobacterium tuberculosis mikrobiologinės diagnostikos galimybės"],["3.13","Racionali respiracinių infekcijų antibiotikoterapija"]]}
 ];
 const ST_NAMES = ["Neliesta","Mokausi","Išmokta"];
-const st = {mode:"notes", area:null, sub:null, topic:null};
+
+/* ---------- MODULIAI ---------- */
+const MODULES = [
+ {id:"skpkl", name:"Širdies, krūtinės ir periferinių kraujagyslių ligos", until:"2026-11-04", areas:AREAS, syl:SYL}
+];
+const st = {mode:"notes", module:null, area:null, sub:null, topic:null};
+const curMod = () => MODULES.find(m=>m.id===st.module);
+const modTopics = m => m.areas.flatMap(a=>allTopics(a));
+function daysLeft(iso){ const t=new Date(); const a=Date.UTC(t.getFullYear(),t.getMonth(),t.getDate()); const [y,mo,d]=iso.split("-").map(Number); return Math.round((Date.UTC(y,mo-1,d)-a)/864e5); }
+function dueLabel(iso){ const [y,mo,d]=iso.split("-").map(Number); const mon=["sausio","vasario","kovo","balandžio","gegužės","birželio","liepos","rugpjūčio","rugsėjo","spalio","lapkričio","gruodžio"].at(mo-1); const n=daysLeft(iso); return {txt:`iki ${mon} ${d} d. · `+(n>0?`liko ${n} d.`:n===0?"šiandien":"baigėsi"), late:n<0}; }
 const store = {
   get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
   set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
@@ -743,21 +794,24 @@ function expandCards(cards){
 
 function renderModes(){
   $("#modes").innerHTML = MODES.map(m=>{
-    if(m.id==="progress"){ const s=progStats(SYL.flatMap(b=>b.items)); return `<button class="mode prog" data-mode="progress" aria-pressed="${st.mode==="progress"}"><span class="ic">${m.ic}</span><b>${m.name}</b><span class="n">${s.pct} % išmokta</span></button>`; }
-    const total = AREAS.reduce((n,a)=>n+count(allTopics(a),m.id),0);
-    return `<button class="mode" data-mode="${m.id}" aria-pressed="${st.mode===m.id}"><span class="ic">${m.ic}</span><b>${m.name}</b><span class="n">${total} ${unit(m.id)}</span></button>`;
+    const M=curMod();
+    if(m.id==="progress"){ const s=M?progStats(M.syl.flatMap(b=>b.items),M):progAll(); return `<button class="mode prog" data-mode="progress" aria-pressed="${st.mode==="progress"}"><span class="row1"><span class="ic">${m.ic}</span>${ICO.progress}</span><b>${m.name}</b><span class="n">${s.pct} % išmokta</span></button>`; }
+    const total = (M?[M]:MODULES).reduce((n,mm)=>n+count(modTopics(mm),m.id),0);
+    return `<button class="mode" data-mode="${m.id}" aria-pressed="${st.mode===m.id}"><span class="row1"><span class="ic">${m.ic}</span>${ICO[m.id]}</span><b>${m.name}</b><span class="n">${total} ${unit(m.id)}</span></button>`;
   }).join("");
   $("#modes").querySelectorAll("button").forEach(b=>b.onclick=()=>{st.mode=b.dataset.mode; render();});
 }
 
 function renderCrumbs(){
-  const parts=[{label:"Pradžia",go:()=>{st.area=st.sub=st.topic=null}}];
-  const a=AREAS.find(x=>x.id===st.area);
+  const parts=[{label:"Moduliai",go:()=>{st.module=st.area=st.sub=st.topic=null}}];
+  const M=curMod();
+  if(M) parts.push({label:M.name,go:()=>{st.area=st.sub=st.topic=null}});
+  const a=M&&st.mode!=="progress"&&M.areas.find(x=>x.id===st.area);
   if(a) parts.push({label:a.name,go:()=>{st.sub=st.topic=null}});
   const s=a&&a.subs&&a.subs.find(x=>x.id===st.sub);
   if(s) parts.push({label:s.name,go:()=>{st.topic=null}});
   const el=$("#crumbs"); el.innerHTML="";
-  if(parts.length===1||st.mode==="progress"){el.hidden=true;return} el.hidden=false;
+  if(parts.length===1){el.hidden=true;return} el.hidden=false;
   parts.forEach((p,i)=>{
     if(i) el.insertAdjacentHTML("beforeend",'<span class="sep">/</span>');
     const b=document.createElement("button"); b.textContent=p.label; b.onclick=()=>{p.go();render()}; el.appendChild(b);
@@ -772,10 +826,12 @@ function rowsFor(topics, a){
 function render(){
   renderModes(); renderCrumbs();
   const v=$("#view");
-  if(st.mode==="progress"){ renderProgress(v); return; }
-  const a=AREAS.find(x=>x.id===st.area);
+  const M=curMod();
+  if(!M){ renderModules(v); return; }
+  if(st.mode==="progress"){ renderProgress(v,M); return; }
+  const a=M.areas.find(x=>x.id===st.area);
   if(!a){
-    v.innerHTML = `<p class="section-label">Mokymosi sritis</p><div class="areas">${AREAS.map(x=>{
+    v.innerHTML = `<p class="section-label">${esc(M.name)} · mokymosi sritis</p><div class="areas">${M.areas.map(x=>{
       const n=count(allTopics(x),st.mode);
       const chips = x.subs ? `<div class="chips">${x.subs.map(s=>`<span class="chip">${esc(s.name)}</span>`).join("")}</div>`:"";
       return `<button class="area" data-area="${x.id}" style="--c:${x.c};--cs:${x.cs}"><span class="tab"></span><span class="in"><h3>${x.name}</h3><p>${n} ${unit(st.mode)} · ${esc(x.blurb)}</p>${chips}</span><span class="go" aria-hidden="true">→</span></button>`;}).join("")}</div>`;
@@ -867,26 +923,48 @@ function renderTest(pane,t){
 
 /* ---------- progresas ---------- */
 let progFilter="all", resetArm=false;
-function progMap(){ return store.get("progress",{}); }
-function progStats(items){ const m=progMap(); let d=0,w=0; items.forEach(it=>{const s=m[it[0]]||0; if(s===2)d++; else if(s===1)w++;}); const n=items.length; return {n,d,w,pct:n?Math.round(d/n*100):0, pw:n?w/n*100:0, pd:n?d/n*100:0}; }
-function renderProgress(v){
-  const m=progMap(); const all=SYL.flatMap(b=>b.items); const S=progStats(all);
+function progMap(M){ M=M||curMod(); const k="progress:"+M.id; const v=store.get(k,null); return v!==null? v : (M.id==="skpkl"? store.get("progress",{}) : {}); }
+function progSave(M,v){ store.set("progress:"+M.id,v); }
+function progAll(){ let n=0,d=0; MODULES.forEach(M=>{const s=progStats(M.syl.flatMap(b=>b.items),M); n+=s.n; d+=s.d;}); return {pct:n?Math.round(d/n*100):0}; }
+function progStats(items,M){ const m=progMap(M); let d=0,w=0; items.forEach(it=>{const s=m[it[0]]||0; if(s===2)d++; else if(s===1)w++;}); const n=items.length; return {n,d,w,pct:n?Math.round(d/n*100):0, pw:n?w/n*100:0, pd:n?d/n*100:0}; }
+function renderProgress(v,M){
+  const SY=M.syl; const m=progMap(M); const all=SY.flatMap(b=>b.items); const S=progStats(all,M);
   v.innerHTML=`<div class="p-hero"><div class="p-big">${S.pct}<small> %</small></div><div><h2>Išmokta ${S.d} iš ${S.n} temų</h2><p>Dar mokaisi: ${S.w} · Neliesta: ${S.n-S.d-S.w}</p>
    <div class="sbar" role="img" aria-label="Išmokta ${S.pct} procentų"><i class="g" style="width:${S.pd}%"></i><i class="y" style="width:${S.pw}%"></i></div>
    <div class="p-legend"><em style="--sw:var(--good)">Išmokta</em><em style="--sw:var(--warn)">Mokausi</em><em style="--sw:var(--line)">Neliesta</em></div></div></div>
   <div class="p-tools"><div class="seg" role="group" aria-label="Rodyti"><button data-f="all" aria-pressed="${progFilter==="all"}">Visos temos</button><button data-f="todo" aria-pressed="${progFilter==="todo"}">Neišmoktos</button></div>
    <button class="btn" id="preset">${resetArm?"Tikrai išvalyti? Spausk dar kartą":"Išvalyti žymes"}</button></div>
   <p class="note" style="margin:0 0 12px">Bakstelk būseną šalia temos: Neliesta → Mokausi → Išmokta. Žymės saugomos šioje naršyklėje.</p>
-  ${SYL.map(b=>{const s=progStats(b.items); const rows=b.items.filter(it=>progFilter==="all"||(m[it[0]]||0)!==2);
+  ${SY.map(b=>{const s=progStats(b.items,M); const rows=b.items.filter(it=>progFilter==="all"||(m[it[0]]||0)!==2);
     return `<section class="blk" style="--c:${b.c}"><div class="blk-head"><h3>${b.name}</h3><span class="pct">${s.pct} %</span>
      <div class="sbar"><i class="g" style="width:${s.pd}%"></i><i class="y" style="width:${s.pw}%"></i></div><span class="sub">Išmokta ${s.d} iš ${s.n} · mokausi ${s.w}</span></div>
      ${rows.length?rows.map(it=>{const k=m[it[0]]||0; const link=it[2]?` <a href="#" data-open="${it[0]}">medžiaga →</a>`:"";
        return `<div class="trow s${k}"><span class="no">${it[0]}</span><span class="tt">${esc(it[1])}${link}</span><button class="st s${k}" data-id="${it[0]}" aria-label="${esc(it[0]+" "+it[1])}: ${ST_NAMES[k]}. Pakeisti būseną">${ST_NAMES[k]}</button></div>`;}).join(""):`<div class="trow"><span></span><span class="tt note">Visos šios srities temos išmoktos.</span></div>`}
     </section>`;}).join("")}`;
-  v.querySelectorAll(".st").forEach(b=>b.onclick=()=>{const mm=progMap(); const id=b.dataset.id; mm[id]=((mm[id]||0)+1)%3; if(!mm[id]) delete mm[id]; store.set("progress",mm); resetArm=false; const y=window.scrollY; render(); window.scrollTo(0,y);});
+  v.querySelectorAll(".st").forEach(b=>b.onclick=()=>{const mm=progMap(M); const id=b.dataset.id; mm[id]=((mm[id]||0)+1)%3; if(!mm[id]) delete mm[id]; progSave(M,mm); resetArm=false; const y=window.scrollY; render(); window.scrollTo(0,y);});
   v.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{progFilter=b.dataset.f; resetArm=false; render();});
-  $("#preset").onclick=()=>{ if(resetArm){store.set("progress",{}); resetArm=false;} else resetArm=true; render(); };
+  $("#preset").onclick=()=>{ if(resetArm){progSave(M,{}); resetArm=false;} else resetArm=true; render(); };
   v.querySelectorAll("[data-open]").forEach(a=>a.onclick=e=>{e.preventDefault(); const it=all.find(x=>x[0]===a.dataset.open); const L=it[2]; st.area=L.area; st.sub=L.sub; st.topic=L.topic; st.mode="notes"; render(); window.scrollTo(0,0);});
+}
+
+/* ---------- modulių pasirinkimas ---------- */
+function renderModules(v){
+  const hr=new Date().getHours(); const greet=hr<11?"Labas rytas":hr<18?"Laba diena":"Labas vakaras";
+  const cur=MODULES[0], dl=daysLeft(cur.until), tot=modTopics(cur).length;
+  const allS=progAll();
+  v.innerHTML = `<section class="hero"><div class="hi">${greet}</div><h2>Mokomės, <em>daktaryte</em>.</h2>
+    <p>Pasirink modulį ir toliau mokykis iš konspektų, kortelių ar testų.</p>
+    <div class="stats"><span><b>${dl>0?dl:0}</b> d. iki modulio pabaigos</span><span><b>${tot}</b> temos su medžiaga</span><span><b>${allS.pct} %</b> išmokta</span></div>
+    <svg class="ecg" viewBox="0 0 860 56" preserveAspectRatio="none" aria-hidden="true"><path d="${ECG_PATH}"/></svg></section>
+  <p class="section-label">Pasirink modulį</p><div class="mods">${MODULES.map(M=>{
+    const s=progStats(M.syl.flatMap(b=>b.items),M); const due=dueLabel(M.until);
+    const n=count(modTopics(M), st.mode==="progress"?"notes":st.mode);
+    return `<button class="mod" data-mod="${M.id}"><svg class="trace" viewBox="0 0 200 70" aria-hidden="true"><path d="M0 40 H60 l6 10 l10 -45 l10 52 l8 -17 H200"/></svg><span class="eyebrow"><span class="due ${due.late?"late":""}">${due.txt}</span><span>${M.areas.length} sritys · ${n} ${unit(st.mode==="progress"?"notes":st.mode)}</span></span>
+      <h2>${esc(M.name)}</h2>
+      <span class="meta">${M.areas.map(a=>`<span style="background:${a.cs}">${esc(a.name)}</span>`).join("")}</span>
+      <span class="foot"><span class="sbar" role="img" aria-label="Išmokta ${s.pct} procentų"><i class="g" style="width:${s.pd}%"></i><i class="y" style="width:${s.pw}%"></i></span><b>${s.pct} %</b></span></button>`;}).join("")}
+    <div class="empty"><b>Kitas modulis</b> atsiras čia, kai prasidės. Atsiųsk Claude jo aprašą ar skaidres.</div></div>`;
+  v.querySelectorAll("[data-mod]").forEach(b=>b.onclick=()=>{st.module=b.dataset.mod; st.area=st.sub=st.topic=null; render(); window.scrollTo(0,0);});
 }
 
 render();
