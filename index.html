@@ -2128,6 +2128,45 @@ const NOTES_EGZ_RIT = `
 <ol>${EGZ_RIT.map(x=>`<li style="margin:12px 0"><b>${x.q}</b><br><span class="note">${x.src}</span><br>Atsakymas: <mark>${x.o[x.c]}</mark><br><span class="note">${x.e}</span></li>`).join("")}</ol>
 </section>`;
 
+/* ---------- TESTAS: VAISTAI RITMO SUTRIKIMAMS ---------- */
+const TEST_VAIST = [
+ {q:"Kurie antiaritminiai vaistai skaidrėse nurodyti supraventrikulinių aritmijų gydymui?", o:["Adenozinas, digoksinas, ivabradinas","BAB, KKB, propafenonas, amiodaronas","Lidokainas, meksiletinas","Atropinas, izoprenalinas"], c:1, e:"Skaidrė „SVA gydymo principai“: antiaritminiai vaistai – BAB, KKB, propafenonas, amiodaronas."},
+ {q:"Kurie vaistai PV RITMO kontrolei nurodyti skaidrėse?", o:["BAB, digoksinas","Propafenonas, amiodaronas","Varfarinas, apiksabanas","MgSO₄, lidokainas"], c:1, e:"Ritmo kontrolė: antiaritmikai (propafenonas, amiodaronas), kardioversija, abliacija."},
+ {q:"Kurie vaistai PV DAŽNIO kontrolei nurodyti skaidrėse?", o:["Propafenonas, flekainidas","BAB, digoksinas, KKB","Amiodaronas, sotalolis","Adenozinas, atropinas"], c:1, e:"Dažnio kontrolė (lėtinis PV): BAB, digoksinas, KKB arba EKS + dirbtinė AV blokada."},
+ {q:"Kurie vaistai skaidrėse nurodyti būklei stabilizuoti esant skilvelinėms aritmijoms?", o:["Digoksinas ir verapamilis","Amiodaronas ir MgSO₄","Adenozinas ir propafenonas","Aspirinas ir heparinas"], c:1, e:"Skaidrė: būklei stabilizuoti – amiodaronas, MgSO₄; koreguoti elektrolitus ir išemiją."},
+ {q:"Kuri vaistų grupė gerina ilgalaikę skilvelinių aritmijų prognozę?", o:["Beta adrenoblokatoriai","Digoksinas","Dihidropiridiniai KKB","Nitratai"], c:0, e:"Skaidrė: BAB gerina ilgalaikę prognozę."},
+ {q:"Kas apsaugo nuo insulto sergant PV?", o:["Aspirinas","Klopidogrelis","Antikoaguliantas (NGAK ar varfarinas)","Statinas"], c:2, e:"Skaidrė: aspirinas neapsaugo nuo insulto PV sergančių pacientų. PV krešulys yra fibrininis (ausytėje), todėl reikia antikoaguliantų."},
+ {q:"Kuris vaistas NĖRA naujasis geriamasis antikoaguliantas?", o:["Apiksabanas","Rivaroksabanas","Edoksabanas","Varfarinas"], c:3, e:"Varfarinas yra vitamino K antagonistas. Dabigatranas taip pat NGAK (papildyta)."},
+ {q:"PV su mechaniniu vožtuvu ar vidutine–sunkia mitraline stenoze. Kuris antikoaguliantas?", o:["Apiksabanas","Varfarinas (VKA)","Aspirinas","Edoksabanas"], c:1, e:"Schema iš skaidrių: vožtuvinės kilmės PV → VKA. NGAK šiais atvejais netinka (papildyta)."},
+ {q:"Kokio INR siekiama gydant PV varfarinu?", o:["1,0–1,5","2–3","3,5–4,5","> 5"], c:1, e:"Papildyta: tikslinis INR 2–3 (tai buvo ir egzamino atsakyme)."},
+ {q:"Kurie antikoaguliantai skaidrėse nurodyti kaip parenteriniai (tiesioginiai)?", o:["Varfarinas, acenokumarolis","Nefrakcionuotas heparinas, MMMH","Apiksabanas, rivaroksabanas","Klopidogrelis, tikagreloras"], c:1, e:"Skaidrė „Antikoaguliacinis gydymas“."},
+ {q:"Koks pirmo pasirinkimo vaistas AVMRT nutraukti, kai vagaliniai manevrai neveiksmingi?", o:["Amiodaronas","Adenozinas","Digoksinas","Furosemidas"], c:1, e:"Papildyta (ESC) ir egzamino klausimas: adenozinas i/v greitai, 6 mg, jei reikia – 12 mg."},
+ {q:"Koks vaistas skiriamas, jei adenozinas AVMRT nenutraukė, o pacientas stabilus?", o:["Verapamilis arba diltiazemas i/v (ar BAB)","Propafenonas p/o","Digoksinas p/o","Lidokainas"], c:0, e:"Papildyta (ESC). Nestabiliam pacientui – sinchronizuota EIT."},
+ {q:"Pacientas su WPW ir preeksituotu PV (platūs, netaisyklingi QRS). Kurio vaisto NEGALIMA skirti?", o:["Prokainamido","Ibutilido","Verapamilio (ir kitų AV mazgo blokatorių)","Atliekama EIT"], c:2, e:"Papildyta: adenozinas, verapamilis, diltiazemas, digoksinas, BAB gali paspartinti laidumą pluoštu ir sukelti skilvelių virpėjimą."},
+ {q:"Kuris vaistas skiriamas Torsades de pointes atveju?", o:["Amiodaronas","MgSO₄","Sotalolis","Propafenonas"], c:1, e:"MgSO₄ yra skaidrėse; dozė 2 g i/v papildyta. Amiodaronas ir sotalolis ilgina QT, todėl netinka."},
+ {q:"Stabili monomorfinė ST su pulsu. Koks vaistas?", o:["Adenozinas","Amiodaronas i/v (300 mg)","Verapamilis","Digoksinas"], c:1, e:"Papildyta (ESC): amiodaronas ar prokainamidas; nestabiliam – EIT. Amiodaronas skaidrėse nurodytas būklei stabilizuoti."},
+ {q:"Staigus PV prieš 2 val., KS IF 55 %, be struktūrinės ligos. Koks vaistas kardioversijai?", o:["Amiodaronas i/v","Propafenonas i/v","Digoksinas i/v","Verapamilis i/v"], c:1, e:"Egzamino klausimas: be struktūrinės ligos – propafenonas (ar flekainidas)."},
+ {q:"PV su ŠN, KS IF 30 %. Koks antiaritmikas tinka ritmo kontrolei?", o:["Propafenonas","Flekainidas","Amiodaronas","Verapamilis"], c:2, e:"Papildyta: propafenonas ir flekainidas kontraindikuotini esant struktūrinei ligai ar ŠN."},
+ {q:"PV, ŠSD 120, KS IF 30 %. Kurių vaistų NESKIRTUMĖTE?", o:["Bisoprololio, digoksino","Verapamilio, propafenono","Antikoagulianto","Diuretiko"], c:1, e:"Egzamino klausimas: verapamilis (neigiamas inotropinis poveikis) ir propafenonas netinka esant ↓ IF."},
+ {q:"Lėtinis tachisistolinis PV, KS IF 45 %. Kurie vaistai tinka dažnio kontrolei?", o:["Bisoprololis, verapamilis, digoksinas","Propafenonas, flekainidas","Perindoprilis, furosemidas","Adenozinas, amiodaronas"], c:0, e:"Egzamino klausimas. Kai IF ≤ 40 %, verapamilio ir diltiazemo vengiama."},
+ {q:"Kurie vaistai skiriami sinusiniam ritmui išlaikyti esant paroksizminiam PV be struktūrinės ligos?", o:["Digoksinas, verapamilis","Propafenonas, flekainidas, amiodaronas","Aspirinas, klopidogrelis","Ivabradinas"], c:1, e:"Egzamino klausimas."},
+ {q:"Kiek laiko po kardioversijos reikia tęsti antikoaguliaciją?", o:["Nereikia","≥ 4 savaites","3 dienas","Tik iki išrašymo"], c:1, e:"Papildyta (ESC): ≥ 4 sav. po kardioversijos, toliau pagal CHA₂DS₂-VASc."},
+ {q:"Kurie vaistai skirti tik dažnio kontrolei ir NEATKURIA sinusinio ritmo?", o:["Propafenonas, flekainidas","Digoksinas, verapamilis, BAB","Amiodaronas","Ibutilidas"], c:1, e:"Dažnio kontrolės vaistai lėtina laidumą per AV mazgą, bet ritmo neatkuria."}
+];
+const NOTES_VAIST = `
+<div class="call tip"><strong>Apie šį testą</strong>Testas apima tik vaistus ritmo sutrikimams. Paaiškinimuose nurodyta, ar informacija yra skaidrėse, ar <span class="tag-extra">papildyta</span> iš ESC gairių ir egzamino klausimų. Spręsk jį skiltyje <b>„Testai“</b>.</div>
+<section class="box"><h3><span class="num">Rx</span>Santrauka</h3>
+<div class="tbl"><table><tr><th>Situacija</th><th>Skaidrėse</th><th>Papildyta</th></tr>
+<tr><td>SVA bendrai</td><td>BAB, KKB, propafenonas, amiodaronas</td><td></td></tr>
+<tr><td>AVMRT nutraukti</td><td>—</td><td>Vagaliniai manevrai → <mark>adenozinas</mark> 6/12 mg → verapamilis / diltiazemas / BAB → EIT</td></tr>
+<tr><td>WPW su preeksituotu PV</td><td>—</td><td><mark>NE AV mazgo blokatoriai</mark>; prokainamidas, ibutilidas, EIT</td></tr>
+<tr><td>PV ritmo kontrolė</td><td><mark>Propafenonas, amiodaronas</mark></td><td>Flekainidas; esant ŠN ar struktūrinei ligai – tik amiodaronas</td></tr>
+<tr><td>PV dažnio kontrolė</td><td><mark>BAB, digoksinas, KKB</mark></td><td>Kai IF ≤ 40 % – be verapamilio ir diltiazemo</td></tr>
+<tr><td>Antikoaguliacija</td><td><mark>Varfarinas; apiksabanas, rivaroksabanas, edoksabanas; heparinas, MMMH</mark>. Aspirinas neapsaugo!</td><td>Dabigatranas; INR 2–3; vožtuvinis PV → tik VKA</td></tr>
+<tr><td>Skilvelinės aritmijos ūmiai</td><td><mark>Amiodaronas, MgSO₄</mark></td><td>Prokainamidas; torsades – MgSO₄ 2 g</td></tr>
+<tr><td>Skilvelinės aritmijos ilgalaikiai</td><td><mark>BAB</mark></td><td>Amiodaronas, sotalolis</td></tr></table></div>
+</section>`;
+
 /* ---------- STRUKTŪRA ---------- */
 const AREAS = [
  {id:"chirurgija", name:"Chirurgija", c:"var(--scrub)", cs:"var(--scrub-soft)", blurb:"Širdies, kraujagyslių ir krūtinės chirurgija",
@@ -2157,6 +2196,7 @@ const AREAS = [
    ]},
    {id:"ritmo", name:"Ritmo sutrikimai", topics:[
      {id:"ritmas", title:"Širdies ritmo sutrikimai: AVMRT, WPW, ST, PV ir PP", src:"Paskaitos skaidrės 2025 · pagal programos 4 klausimus", notes:NOTES_RIT, cards:CARDS_RIT, test:TEST_RIT},
+     {id:"ritmas-vaistai", title:"Testas: vaistai ritmo sutrikimams", src:"Skaidrės + ESC gairės + egzamino klausimai", notes:NOTES_VAIST, cards:[], test:TEST_VAIST},
      {id:"ritmas-egz", title:"Egzamino klausimai: ritmo sutrikimai", src:"Ankstesnių metų LSMU egzaminai ir testai (2021–2022)", notes:NOTES_EGZ_RIT, cards:[], test:EGZ_RIT}
    ]},
    {id:"laidumo", name:"Laidumo sutrikimai", topics:[
