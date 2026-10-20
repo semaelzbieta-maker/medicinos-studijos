@@ -415,7 +415,7 @@ const AREAS = [
      {id:"plauciai-pleura", title:"Plaučių ir pleuros ligų chirurginė diagnostika ir gydymas", src:"Paskaita 2026-01-06 · 19 skaidrių", notes:NOTES_PLAUCIAI, cards:CARDS_PLAUCIAI, test:TEST_PLAUCIAI}
    ]}
   ]},
- {id:"kardiologija", name:"Kardiologija", c:"var(--heart)", cs:"var(--heart-soft)", blurb:"8 poskyriai, temos dar neįkeltos",
+ {id:"kardiologija", name:"Kardiologija", c:"var(--heart)", cs:"var(--heart-soft)", blurb:"11 poskyrių, temos dar neįkeltos",
   subs:[
    {id:"lis", name:"Lėtiniai išeminiai sindromai", topics:[]},
    {id:"uis", name:"Ūminiai išeminiai sindromai", topics:[]},
@@ -424,9 +424,26 @@ const AREAS = [
    {id:"infekcines", name:"Infekcinės širdies ligos", topics:[]},
    {id:"ritmo", name:"Ritmo sutrikimai", topics:[]},
    {id:"laidumo", name:"Laidumo sutrikimai", topics:[]},
-   {id:"ydos", name:"Įgytos ir įgimtos ydos", topics:[]}
+   {id:"ydos", name:"Įgytos ir įgimtos ydos", topics:[]},
+   {id:"labmed", name:"Laboratorinė medicina: Uždegiminės širdies ligos", topics:[]},
+   {id:"umios", name:"Ūmios būklės kardiologijoje – ankstyva diagnostika ir pradinis gydymas", topics:[]},
+   {id:"instrumentiniai", name:"Instrumentiniai diagnostikos metodai kardiologijoje", topics:[]}
   ]},
- {id:"pulmonologija", name:"Pulmonologija", c:"var(--lung)", cs:"var(--lung-soft)", blurb:"Temos dar neįkeltos", topics:[]}
+ {id:"pulmonologija", name:"Pulmonologija", c:"var(--lung)", cs:"var(--lung-soft)", blurb:"12 poskyrių, temos dar neįkeltos",
+  subs:[
+   {id:"obstrukcines", name:"Obstrukcinių plaučių ligų diagnostikos ir gydymo principai", topics:[]},
+   {id:"funkciniai", name:"Funkciniai tyrimai kvėpavimo organų ligoms diagnozuoti", topics:[]},
+   {id:"navikai", name:"Plaučių navikų diagnostikos ir gydymo principai, kraujavimas iš plaučių", topics:[]},
+   {id:"intersticines", name:"Intersticinės plaučių ligos", topics:[]},
+   {id:"pe", name:"Ūminės plaučių embolijos diagnostikos ir gydymo principai. Plautinės hipertenzijos diagnostika", topics:[]},
+   {id:"invaziniai", name:"Invaziniai tyrimai kvėpavimo organų ligoms diagnozuoti", topics:[]},
+   {id:"infekcijos", name:"Respiracinės infekcijos diagnostikos ir gydymo principai", topics:[]},
+   {id:"miegas", name:"Kvėpavimo sutrikimai miegant", topics:[]},
+   {id:"knepakankamumas", name:"Kvėpavimo nepakankamumas", topics:[]},
+   {id:"tbc", name:"Plaučių ir ekstrapulmoninės tuberkuliozės gydymo principai ir profilaktika", topics:[]},
+   {id:"mikrobiologija", name:"Respiracinių infekcijų ir Mycobacterium tuberculosis mikrobiologinės diagnostikos galimybės", topics:[]},
+   {id:"antibiotikai", name:"Racionali respiracinių infekcijų antibiotikoterapija", topics:[]}
+  ]}
 ];
 
 /* ---------- būsena ---------- */
@@ -436,11 +453,11 @@ const STUDY_MODES = MODES.filter(m=>m.id!=="progress");
 /* ---------- DALYKO TEMOS (LSMU aprašas) ---------- */
 const SYL = [
  {id:"k", name:"Kardiologija", c:"var(--heart)", cs:"var(--heart-soft)", items:[
-  ["1.1","Įvadinė paskaita"],["1.2","Dažniausi kardiologiniai simptomai ir sindromai"],["1.3","Lėtiniai išeminiai sindromai"],["1.4","Ūminiai išeminiai sindromai"],["1.5","Arterinė hipertenzija"],["1.6","Širdies nepakankamumas ir miokardo ligos"],["1.7","Širdies ritmo sutrikimai"],["1.8","Širdies laidumo sutrikimai"],["1.9","Įgytos ir įgimtos širdies ydos"],["1.10","Uždegiminės širdies ligos"],["1.10.1","Uždegiminės širdies ligos: laboratorinė medicina"],["1.11","Ūmios būklės kardiologijoje – ankstyva diagnostika"],["1.12","Instrumentiniai diagnostikos metodai kardiologijoje"]]},
+  ["1.1","Įvadinė paskaita"],["1.2","Dažniausi kardiologiniai simptomai ir sindromai"],["1.3","Lėtiniai išeminiai sindromai"],["1.4","Ūminiai išeminiai sindromai"],["1.5","Arterinė hipertenzija"],["1.6","Širdies nepakankamumas ir miokardo ligos"],["1.7","Širdies ritmo sutrikimai"],["1.8","Širdies laidumo sutrikimai"],["1.9","Įgytos ir įgimtos širdies ydos"],["1.10","Uždegiminės širdies ligos"],["1.10.1","Uždegiminės širdies ligos: laboratorinė medicina"],["1.11","Ūmios būklės kardiologijoje – ankstyva diagnostika ir pradinis gydymas"],["1.12","Instrumentiniai diagnostikos metodai kardiologijoje"]]},
  {id:"c", name:"Chirurgija", c:"var(--scrub)", cs:"var(--scrub-soft)", items:[
   ["2.1","Širdies chirurginių operacijų principai, pooperacinis laikotarpis"],["2.2","Išeminės širdies ligos chirurginis gydymas"],["2.3","Perikardo ligos ir širdies augliai, jų chirurginis gydymas"],["2.4","Įgytų širdies vožtuvų ydų chirurginis gydymas"],["2.5","Krūtininės aortos ligos, jų chirurginis gydymas"],["2.6","Aortos disekacija, chirurginis gydymas"],["2.7","Širdies nepakankamumo chirurginis gydymas"],["2.8","Įvadas į krūtinės chirurgiją. Pagrindiniai chi…"],["2.9","Krūtinės traumų diagnostika, konservatyvus ir chirurginis gydymas"],["2.10","Plaučių ir pleuros ligų chirurginė diagnostika ir gydymas",{area:"chirurgija",sub:"krutines",topic:"plauciai-pleura"}],["2.11","Tarpuplaučio ir diafragmos ligų chirurginė diagnostika ir gydymas"],["2.12","Ūmi ir lėtinė galūnių išemija"],["2.13","Brachiocefalinių arterijų ligos"],["2.14","Pilvinės aortos ir periferinių arterijų aneurizmos"],["2.15","Venų ligos"]]},
  {id:"p", name:"Pulmonologija", c:"var(--lung)", cs:"var(--lung-soft)", items:[
-  ["3.1","Obstrukcinių plaučių ligų diagnostikos ir gydymo principai"],["3.2","Funkciniai tyrimai kvėpavimo organų ligoms diagnozuoti"],["3.3","Plaučių navikų diagnostikos ir gydymo principai"],["3.4","Intersticinės plaučių ligos"],["3.5","Ūminės plaučių embolijos diagnostikos ir gydymo principai"],["3.6","Invaziniai tyrimai kvėpavimo organų ligoms diagnozuoti"],["3.7","Respiracinės infekcijos: diagnostikos ir gydymo principai"],["3.8","Pleuros ligų diagnostikos ir gydymo principai"],["3.9","Kvėpavimo sutrikimai miegant"],["3.10","Kvėpavimo nepakankamumas: diagnostika ir spec…"],["3.11","Plaučių ir ekstrapulmoninės tuberkuliozės gydymas"],["3.12","Respiracinių infekcijų ir Mycobacterium tuber…"],["3.13","Racionali respiracinių infekcijų antibiotikoterapija"]]}
+  ["3.1","Obstrukcinių plaučių ligų diagnostikos ir gydymo principai"],["3.2","Funkciniai tyrimai kvėpavimo organų ligoms diagnozuoti"],["3.3","Plaučių navikų diagnostikos ir gydymo principai, kraujavimas iš plaučių"],["3.4","Intersticinės plaučių ligos"],["3.5","Ūminės plaučių embolijos diagnostikos ir gydymo principai. Plautinės hipertenzijos diagnostika"],["3.6","Invaziniai tyrimai kvėpavimo organų ligoms diagnozuoti"],["3.7","Respiracinės infekcijos diagnostikos ir gydymo principai"],["3.8","Pleuros ligų diagnostikos ir gydymo principai"],["3.9","Kvėpavimo sutrikimai miegant"],["3.10","Kvėpavimo nepakankamumas"],["3.11","Plaučių ir ekstrapulmoninės tuberkuliozės gydymo principai ir profilaktika"],["3.12","Respiracinių infekcijų ir Mycobacterium tuberculosis mikrobiologinės diagnostikos galimybės"],["3.13","Racionali respiracinių infekcijų antibiotikoterapija"]]}
 ];
 const ST_NAMES = ["Neliesta","Mokausi","Išmokta"];
 const st = {mode:"notes", area:null, sub:null, topic:null};
