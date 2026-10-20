@@ -694,6 +694,239 @@ const TEST_LVAS = [
  {q:"Kuris rodiklis rodo DIDELĘ riziką (> 3 %/m.) pagal neinvazinius tyrimus?", o:["KS IF 45 %","Ca kiekis 150 Agatstono vnt.","Krūvio metu ST nusileidimas ≥ 2 mm","Vienos VA stenozė 55 %"], c:2, e:"Didelės rizikos kriterijai: ST ↓ ≥ 2 mm krūvio metu, KS IF < 35 %, Ca > 400 Agatstono vnt. ir kt."}
 ];
 
+/* ---------- KONSPEKTAS: ŪVAS ---------- */
+const NOTES_UVAS = `
+<div class="call tip"><strong>Kaip skaityti</strong><mark>Geltonai</mark> pažymėta tai, kas svarbiausia egzaminui. Šaltinis: paskaita „Ūminiai išemijos sindromai“ (2025–2026).</div>
+
+<section class="box"><h3><span class="num">01</span>Apibrėžimas ir klasifikacija</h3>
+<div class="call exam"><strong>Apibrėžimas</strong><b>Ūminis vainikinių arterijų sindromas (ŪVAS)</b> yra bendrinis terminas, apimantis klinikinių būklių spektrą. Jį sukelia staigus, ūmus miokardo kraujotakos sumažėjimas dėl <mark>aterosklerozinės plokštelės pažeidimo (plyšimo ar erozijos) ir su tuo susijusios trombozės</mark> vainikinėje arterijoje.</div>
+<p>Iš pradžių ŪVAS diagnozė yra <mark>darbinė (preliminari)</mark>. Ji nustatoma pagal klinikinį vaizdą, dar negavus EKG ir troponino rezultatų.</p>
+<div class="tbl"><table><tr><th>Forma</th><th>Troponinas</th><th>ST pakilimas</th></tr>
+<tr><td><b>NKA</b> – nestabilioji krūtinės angina</td><td><mark>Nepadidėjęs</mark></td><td>Nėra</td></tr>
+<tr><td><b>MIBSTP</b> – MI be ST pakilimo (NSTEMI)</td><td><mark>Padidėjęs</mark> (su dinamika)</td><td>Nėra</td></tr>
+<tr><td><b>MISSTP</b> – MI su ST pakilimu (STEMI)</td><td>Padidėjęs</td><td><mark>Nuolatinis ST pakilimas</mark></td></tr></table></div>
+<div class="call exam"><strong>Svarbu egzaminui</strong>Pirmas ir svarbiausias žingsnis atvykus pacientui su krūtinės skausmu: <mark>12 derivacijų EKG per ≤ 10 min</mark>. EKG dalija pacientus į MISSTP (skubi reperfuzija) ir NKA / MIBSTP (invazinė strategija pagal riziką).</div>
+</section>
+
+<section class="box"><h3><span class="num">02</span>Epidemiologija</h3>
+<ul><li>IŠL ir jos ūminės formos yra <mark>pagrindinė mirties priežastis</mark> pasaulyje ir Lietuvoje.</li>
+<li>Sergamumas ir mirtingumas didėja su amžiumi. Vyrai serga dažniau ir jaunesni, tačiau moterų prognozė po įvykio dažnai blogesnė (vėlesnis kreipimasis, netipiška klinika).</li>
+<li>Rizikos veiksniai: rūkymas, AH, dislipidemija, CD, nutukimas, fizinis pasyvumas, paveldimumas.</li></ul>
+</section>
+
+<section class="box"><h3><span class="num">03</span>Patofiziologija</h3>
+<p>ŪVAS pagrindas yra <mark>nestabilios (pažeidžiamos) aterosklerozinės plokštelės</mark> pažeidimas.</p>
+<div class="tbl"><table><tr><th>Mechanizmas</th><th>Dažnis</th><th>Esmė</th></tr>
+<tr><td><b>Plokštelės plyšimas</b> (rupture)</td><td>Dažnesnis, ~⅔ atvejų</td><td>Plona fibrozinė kapsulė trūksta, atidengiamas lipidinis branduolys. Būdinga vyrams, plokštelėms su dideliu lipidų kiekiu</td></tr>
+<tr><td><b>Plokštelės erozija</b> (erosion)</td><td>Rečiau, ~⅓ atvejų</td><td>Endotelio pažeidimas be kapsulės plyšimo. Dažniau moterims, jauniems, rūkaliams</td></tr></table></div>
+<h4>Trombo formavimosi kaskada</h4>
+<div class="ladder"><div>Plokštelės plyšimas / erozija</div><div>Atidengiamas subendotelio kolagenas ir audinių faktorius</div><div>Trombocitų adhezija ir aktyvacija</div><div>Krešėjimo kaskados aktyvacija (trombino generavimas)</div><div>Trombo augimas: dalinis ar visiškas VA spindžio užsikimšimas</div></div>
+<div class="call exam"><strong>Egzamino akcentas</strong><mark>Nevisiška okliuzija ar laikina trombozė</mark> → NKA / MIBSTP (subendokardinė išemija, ST depresija arba be pokyčių). <mark>Visiška, ilgalaikė okliuzija</mark> → MISSTP (transmuralinė išemija, ST elevacija).</div>
+<p>Išeminis pažeidimas plinta nuo subendokardo link epikardo („wavefront“ fenomenas). Todėl <mark>laikas iki reperfuzijos</mark> lemia išgyvenusio miokardo kiekį („time is muscle“).</p>
+</section>
+
+<section class="box"><h3><span class="num">04</span>Klinikinis pasireiškimas</h3>
+<p><b>Tipiškas skausmas</b>: spaudžiantis, gniuždantis pojūtis už krūtinkaulio, trunkantis <mark>&gt; 20 min</mark>, neišnykstantis ramybėje ar nuo nitroglicerino, plintantis į kairę ranką, žandikaulį, nugarą, epigastriumą. Gali lydėti dusulys, prakaitavimas, pykinimas, vėmimas, mirties baimė. Kartais vienintelis simptomas yra <mark>ūminis ŠN</mark> ar sinkopė (ypač vyresniems).</p>
+<div class="call extra"><strong>Netipiškas pasireiškimas dažnesnis</strong>Moterims, pagyvenusiems (&gt; 75 m.), sergantiems CD (autonominė neuropatija), po širdies transplantacijos, sergantiems lėtine inkstų liga. Simptomai: dusulys, nuovargis, epigastralgija, pykinimas be tipiško skausmo.</div>
+<div class="tbl"><table><tr><th>Požymis</th><th>Labiau būdinga ŪVAS</th><th>Mažiau būdinga ŪVAS</th></tr>
+<tr><td>Pobūdis</td><td>Spaudžiantis, gniuždantis, sunkumas</td><td>Duriantis, aštrus, taškinis</td></tr>
+<tr><td>Trukmė</td><td>&gt; 20 min</td><td>Sekundės arba nuolatinis kelias dienas</td></tr>
+<tr><td>Priklausomybė nuo kvėpavimo / padėties</td><td>Ne</td><td>Taip</td></tr>
+<tr><td>Provokuoja</td><td>Fizinis / emocinis krūvis</td><td>Palpacija</td></tr>
+<tr><td>Nitroglicerinas</td><td>Sumažėja per kelias minutes</td><td>Nekinta</td></tr></table></div>
+</section>
+
+<section class="box"><h3><span class="num">05</span>Diferencinė diagnostika</h3>
+<div class="tbl"><table><tr><th>Kategorija (7)</th><th>Pavyzdžiai</th></tr>
+<tr><td>Kardialinė (ne ŪVAS)</td><td>Miokarditas, perikarditas, takotsubo kardiomiopatija, greita aritmija</td></tr>
+<tr><td><b>Kraujagysliniai</b></td><td><mark>Aortos disekacija, PATE</mark></td></tr>
+<tr><td>Pulmoninė</td><td>Pneumotoraksas, pneumonija, pleuritas</td></tr>
+<tr><td>Gastrointestininė</td><td>Stemplės spazmas / refliuksas, pepsinė opa, pankreatitas, tulžies pūslės liga</td></tr>
+<tr><td>Kaulų-raumenų</td><td>Kostochondritas, šonkaulio lūžis</td></tr>
+<tr><td>Infekcinė</td><td>Juostinė pūslelinė (prieš bėrimą)</td></tr>
+<tr><td>Psichogeninė</td><td>Panikos priepuolis</td></tr></table></div>
+<div class="call exam"><strong>Kritiškai svarbu</strong>Prieš patvirtinant ŪVAS visada paneigti <mark>aortos disekaciją</mark> ir <mark>plaučių arterijos emboliją</mark>, nes jų gydymas visiškai kitoks.</div>
+</section>
+
+<section class="box"><h3><span class="num">06</span>Diagnostikos algoritmas: EKG → troponinas → GRACE</h3>
+<div class="ladder"><div><b>EKG per ≤ 10 min nuo PMK.</b> Nuolatinis ST pakilimas → MISSTP → iškart reperfuzija</div><div><b>hs-troponinas</b> (0/1 val. arba 0/2 val.). Padidėjęs su dinamika → MIBSTP; nepadidėjęs → NKA</div><div><b>GRACE</b> rizikos vertinimas: invazinės strategijos skuba</div></div>
+</section>
+
+<section class="box"><h3><span class="num">07</span>Troponinas ir MI klasifikacija</h3>
+<p>Širdies troponinai I ir T yra <mark>jautriausi ir specifiškiausi</mark> kardiomiocitų pažeidimo žymenys.</p>
+<div class="ladder"><div>Pradeda kilti po <mark>2–3 val.</mark></div><div>Pikas apie <mark>12–24 val.</mark></div><div>Išlieka padidėjęs <mark>7–14 parų</mark></div></div>
+<div class="call tip"><strong>Svarbu</strong>MI diagnozei būtina troponino <mark>dinamika</mark>. Vien padidėjęs troponinas gali būti ir esant LIL, ŠN, miokarditui, PATE, sepsiui (lėtinis miokardo pažeidimas).</div>
+<div class="tbl"><table><tr><th>Tipas</th><th>4-oji universali MI apibrėžtis</th></tr>
+<tr><td><b>1</b></td><td><mark>Spontaninis MI</mark>: plokštelės plyšimas / erozija ir trombozė (klasikinis ŪVAS)</td></tr>
+<tr><td><b>2</b></td><td><mark>Antrinis MI</mark>: deguonies poreikio / tiekimo disbalansas be trombozės (anemija, aritmija, hipotenzija, vazospazmas, sepsis)</td></tr>
+<tr><td><b>3</b></td><td>Mirtinas MI be biožymenų</td></tr>
+<tr><td><b>4</b></td><td>Su PVAI susijęs MI (4a – procedūros metu, 4b – stento trombozė, 4c – restenozė)</td></tr>
+<tr><td><b>5</b></td><td>Su AVJO susijęs MI</td></tr></table></div>
+</section>
+
+<section class="box"><h3><span class="num">08</span>EKG ir infarkto lokalizacija</h3>
+<p><b>STEMI kriterijus</b>: nauja ST elevacija J taške ≥ 2 gretimose derivacijose: <mark>≥ 1 mm</mark> visose derivacijose, išskyrus V2–V3 (≥ 2 mm vyrams ≥ 40 m., ≥ 2,5 mm vyrams &lt; 40 m., ≥ 1,5 mm moterims). <b>Naujas KKŠB</b> su išemijos klinika prilyginamas STEMI.</p>
+<div class="tbl"><table><tr><th>Lokalizacija</th><th>Derivacijos</th><th>Arterija</th></tr>
+<tr><td><b>Priekinė</b></td><td><mark>V1–V4</mark></td><td>LAD</td></tr>
+<tr><td><b>Šoninė</b></td><td><mark>I, aVL, V5–V6</mark></td><td>LCx</td></tr>
+<tr><td><b>Apatinė</b></td><td><mark>II, III, aVF</mark></td><td>RCA (rečiau LCx)</td></tr>
+<tr><td>Užpakalinė</td><td>Reciprokinė ST depresija V1–V3 (+V7–V9 elevacija)</td><td>LCx arba RCA</td></tr>
+<tr><td>Dešiniojo skilvelio</td><td>V3R–V4R</td><td>Proksimalinė RCA</td></tr></table></div>
+<div class="call exam"><strong>Svarbu klinikoje</strong>Įtariant apatinį MI, užrašyti V3R–V4R, nes <mark>dešiniojo skilvelio infarktas</mark> keičia taktiką: vengiama nitratų ir diuretikų.</div>
+<p><b>MIBSTP / NKA</b>: dažniausiai <mark>ST depresija</mark> ir (ar) <mark>T inversija</mark>. EKG gali būti be reikšmingų pokyčių (~30 %), todėl normali EKG ŪVAS nepaneigia.</p>
+</section>
+
+<section class="box"><h3><span class="num">09</span>Rizikos stratifikacija (NKA / MIBSTP)</h3>
+<div class="tbl"><table><tr><th>Rizika</th><th>Kriterijai</th><th>Invazinė strategija</th></tr>
+<tr><td><b style="color:var(--bad)">Labai didelė</b></td><td>Hemodinaminis nestabilumas / kardiogeninis šokas, refrakterinis skausmas, pavojingos aritmijos, mechaninės komplikacijos, ūminis ŠN, dinaminė ST-T depresija</td><td><mark>Skubi &lt; 2 val.</mark></td></tr>
+<tr><td><b style="color:var(--bad)">Didelė</b></td><td>Patvirtintas MIBSTP (GRACE &gt; 140, troponino dinamika, nauji ST-T pokyčiai)</td><td><mark>Ankstyva &lt; 24 val.</mark></td></tr>
+<tr><td><b style="color:var(--warn)">Vidutinė</b></td><td>CD, inkstų nepakankamumas, KS IF &lt; 40 %, ankstyva postinfarktinė angina, PVAI ar AVJO anamnezėje, GRACE 109–140</td><td>&lt; 72 val.</td></tr>
+<tr><td><b style="color:var(--good)">Maža</b></td><td>Nė vieno iš kriterijų</td><td>Selektyvi</td></tr></table></div>
+<p><b>GRACE</b> komponentai: amžius, ŠSD, sistolinis AKS, kreatininas, Killip klasė, širdies sustojimas atvykus, ST nuokrypis, padidėję kardialiniai žymenys.</p>
+<div class="call exam"><strong>Svarbu egzaminui</strong><mark>GRACE &gt; 140</mark> = didelė rizika → ankstyva (&lt; 24 val.) invazinė strategija.</div>
+</section>
+
+<section class="box"><h3><span class="num">10</span>Revaskuliarizacija</h3>
+<div class="tbl"><table><tr><th></th><th>PVAI</th><th>AVJO</th></tr>
+<tr><td>Metodas</td><td>Kateterinis, stentavimas</td><td>Chirurginis, venos ar arterijos jungtis</td></tr>
+<tr><td>Indikacijos</td><td>MISSTP (skubi), 1–2 kraujagyslių liga, didelė chirurginė rizika</td><td>Daugelio kraujagyslių liga, kamieno stenozė, diabetas su daugeliu pažeidimų (aukštas SYNTAX)</td></tr>
+<tr><td>Privalumai</td><td>Greita, mažiau invazinė</td><td>Ilgalaikiškai geresnė prognozė sudėtingos ligos atveju</td></tr></table></div>
+<p>Sprendžia <mark>„Širdies komanda“ (Heart Team)</mark>: kardiologas ir širdies chirurgas.</p>
+</section>
+
+<section class="box"><h3><span class="num">11</span>STEMI reperfuzijos strategija</h3>
+<div class="call exam"><strong>Pagrindinis principas</strong><mark>„Time is muscle“.</mark> Pirmenybė teikiama <mark>pirminei PVAI</mark>, jei ji gali būti atlikta laiku.</div>
+<div class="tbl"><table><tr><th>Laiko tikslas nuo PMK</th><th>Kas</th></tr>
+<tr><td><mark>≤ 10 min</mark></td><td>EKG registracija ir įvertinimas</td></tr>
+<tr><td>≤ 60 min</td><td>Vielinis pravedimas per stenozę (atvykus tiesiai į PVAI centrą)</td></tr>
+<tr><td><mark>≤ 90 min</mark> (≤ 120 min, jei pervežimas)</td><td>Pirminė PVAI</td></tr>
+<tr><td>≤ 10 min (jei PVAI negalima per 120 min)</td><td>Fibrinolizės pradžia</td></tr></table></div>
+<p>MISSTP, simptomai ≤ 12 val.: PVAI įmanoma per ≤ 120 min → <b>pirminė PVAI</b>. Negalima → <b>fibrinolizė</b> (jei nėra kontraindikacijų) + pervežimas į PVAI centrą.</p>
+<div class="call tip"><strong>Po fibrinolizės</strong>Pacientas <mark>visada</mark> pervežamas į PVAI centrą: vėlyva angiografija po 3–24 val. arba skubi „gelbėjimo“ PVAI, jei ST elevacija per 60–90 min nesumažėja &gt; 50 %.</div>
+<div class="tbl"><table><tr><th>Absoliučios kontraindikacijos fibrinolizei</th><th>Santykinės</th></tr>
+<tr><td>Bet kada buvęs intrakranijinis kraujavimas</td><td>PIP per 6 mėn.</td></tr>
+<tr><td>Smegenų kraujagyslių anomalija</td><td>Geriamieji antikoaguliantai</td></tr>
+<tr><td>Piktybinis intrakranijinis navikas</td><td>Nėštumas ar 1 sav. po gimdymo</td></tr>
+<tr><td>Išeminis insultas per 3 mėn.</td><td>Refrakterinė AH (SAKS &gt; 180)</td></tr>
+<tr><td>Įtariama aortos disekacija</td><td>Pažengusi kepenų liga</td></tr>
+<tr><td>Aktyvus kraujavimas / diatezė</td><td>Infekcinis endokarditas</td></tr>
+<tr><td>Uždara galvos ar veido trauma per 3 mėn.</td><td>Ilga ar trauminė gaivyba</td></tr></table></div>
+</section>
+
+<section class="box"><h3><span class="num">12</span>Farmakologinis gydymas</h3>
+<div class="tbl"><table><tr><th>MONA</th><th>Kada</th></tr>
+<tr><td><b>M</b>orfinas</td><td>Jei skausmas nepasiduoda kitam gydymui</td></tr>
+<tr><td><b>O</b>₂ deguonis</td><td>Tik jei <mark>SpO₂ &lt; 90 %</mark></td></tr>
+<tr><td><b>N</b>itratai</td><td>Jei nėra hipotenzijos, DS MI, PDE-5 inhibitorių vartojimo</td></tr>
+<tr><td><b>A</b>spirinas</td><td>Krakinamoji dozė</td></tr></table></div>
+<p><b>DAPT</b>: aspirinas + P2Y12 inhibitorius (<mark>tikagreloras, prasugrelis</mark> arba klopidogrelis) visiems ŪVAS pacientams, jei nėra kontraindikacijų.</p>
+<div class="tbl"><table><tr><th>Grupė</th><th>Atstovai</th><th>Mechanizmas</th></tr>
+<tr><td>COX-1 inhibitoriai</td><td>Aspirinas</td><td>Negrįžtamai slopina tromboksano A2 sintezę</td></tr>
+<tr><td>P2Y12 inhibitoriai</td><td>Tikagreloras, prasugrelis, klopidogrelis</td><td>Blokuoja ADP receptorius</td></tr>
+<tr><td>GP IIb/IIIa inhibitoriai</td><td>Abciksimabas, eptifibatidas, tirofibanas</td><td>Blokuoja galutinį agregacijos kelią (selektyviai, PVAI metu)</td></tr>
+<tr><td>Antikoaguliantai</td><td>NFH, MMMH (enoksaparinas), fondaparinuksas, bivalirudinas</td><td>Slopina trombino susidarymą / aktyvumą</td></tr></table></div>
+<h4>Ilgalaikė antrinė prevencija</h4>
+<div class="tbl"><table><tr><th>Grupė</th><th>Tikslas</th></tr>
+<tr><td>Didelio intensyvumo statinai</td><td>MTL <mark>&lt; 1,4 mmol/l</mark> ir ≥ 50 % sumažinimas</td></tr>
+<tr><td>Beta adrenoblokatoriai</td><td>Ypač esant sumažintai KS IF</td></tr>
+<tr><td>AKFI / ARB</td><td>KS disfunkcija, ŠN, AH, diabetas</td></tr>
+<tr><td>MRA</td><td>KS IF ≤ 40 % su ŠN ar diabetu</td></tr>
+<tr><td>DAPT trukmė</td><td>Paprastai <mark>12 mėn.</mark></td></tr></table></div>
+<div class="call tip"><strong>Egzamino akcentas</strong>Ilgalaikė prevencija apima gyvenimo būdo korekciją. <b>Kardiologinė reabilitacija</b> rekomenduojama visiems po ŪVAS.</div>
+</section>`;
+
+const TU = "Kardiologija::Uminiai_iseminiai_sindromai";
+const CARDS_UVAS = [
+ {t:"qa", q:"Koks mechanizmas sukelia ūminį vainikinių arterijų sindromą?", a:"Aterosklerozinės plokštelės pažeidimas ir trombozė", tags:TU+"::Apibrezimas"},
+ {t:"qa", q:"Kokia yra pradinė ŪVAS diagnozė, kol negauti EKG ir troponino rezultatai?", a:"Darbinė (preliminari)", tags:TU+"::Apibrezimas"},
+ {t:"qa", q:"Koks troponinas būdingas nestabiliajai krūtinės anginai?", a:"Nepadidėjęs", tags:TU+"::Klasifikacija"},
+ {t:"qa", q:"Kuo MIBSTP skiriasi nuo nestabiliosios krūtinės anginos?", a:"Padidėjusiu troponinu (su dinamika)", tags:TU+"::Klasifikacija"},
+ {t:"qa", q:"Koks EKG požymis skiria MISSTP nuo MIBSTP?", a:"Nuolatinis ST segmento pakilimas", tags:TU+"::Klasifikacija"},
+ {t:"cloze", x:"Pacientui su krūtinės skausmu 12 derivacijų EKG turi būti užrašyta per {{c1::≤ 10 min}}", tags:TU+"::Diagnostika"},
+ {t:"cloze", x:"Plokštelės plyšimas sudaro apie {{c1::⅔}} ŪVAS atvejų", tags:TU+"::Patofiziologija"},
+ {t:"qa", q:"Kuris plokštelės pažeidimo mechanizmas dažnesnis moterims, jauniems ir rūkaliams?", a:"Erozija", tags:TU+"::Patofiziologija"},
+ {t:"cloze", x:"Trombo kaskada: plokštelės plyšimas / erozija → {{c1::kolageno ir audinių faktoriaus atidengimas}} → {{c2::trombocitų adhezija ir aktyvacija}} → {{c3::krešėjimo kaskados aktyvacija}} → trombo augimas", tags:TU+"::Patofiziologija"},
+ {t:"qa", q:"Kokia ŪVAS forma išsivysto esant visiškai, ilgalaikei vainikinės arterijos okliuzijai?", a:"MISSTP", tags:TU+"::Patofiziologija"},
+ {t:"qa", q:"Kokiomis ŪVAS formomis pasireiškia nevisiška okliuzija ar laikina trombozė?", a:"NKA / MIBSTP", tags:TU+"::Patofiziologija"},
+ {t:"qa", q:"Kuria kryptimi plinta išeminis miokardo pažeidimas („wavefront“)?", a:"Nuo subendokardo link epikardo", tags:TU+"::Patofiziologija"},
+ {t:"cloze", x:"Tipiškas ŪVAS krūtinės skausmas trunka {{c1::> 20 min}}", tags:TU+"::Klinika"},
+ {t:"qa", q:"Kodėl sergantiems cukriniu diabetu ŪVAS dažnai pasireiškia netipiškai?", a:"Dėl autonominės neuropatijos", tags:TU+"::Klinika"},
+ {t:"qa", q:"Kurias dvi gyvybei pavojingas būkles būtina paneigti prieš patvirtinant ŪVAS?", a:"Aortos disekaciją ir plaučių arterijos emboliją", tags:TU+"::Diferencine"},
+ {t:"qa", q:"Kas ŪVAS diagnostikos algoritme atliekama po EKG ir troponino?", a:"GRACE rizikos vertinimas", tags:TU+"::Diagnostika"},
+ {t:"qa", q:"Kurie žymenys yra jautriausi ir specifiškiausi kardiomiocitų pažeidimui?", a:"Širdies troponinai (I ir T)", tags:TU+"::Troponinas"},
+ {t:"cloze", x:"Troponinas pradeda kilti praėjus {{c1::2–3 val.}} po pažeidimo", tags:TU+"::Troponinas"},
+ {t:"cloze", x:"Troponino pikas – apie {{c1::12–24 val.}}", tags:TU+"::Troponinas"},
+ {t:"cloze", x:"Troponinas išlieka padidėjęs {{c1::7–14 parų}}", tags:TU+"::Troponinas"},
+ {t:"qa", q:"Kas be padidėjusio troponino būtina MI diagnozei?", a:"Troponino dinamika", tags:TU+"::Troponinas"},
+ {t:"qa", q:"Kiek MI tipų išskiria 4-oji universali MI apibrėžtis?", a:"5", tags:TU+"::MI_klasifikacija"},
+ {t:"cloze", x:"{{c1::1 tipo}} MI – spontaninis MI dėl plokštelės plyšimo / erozijos ir trombozės", tags:TU+"::MI_klasifikacija"},
+ {t:"cloze", x:"{{c1::2 tipo}} MI – antrinis MI dėl deguonies poreikio ir tiekimo disbalanso be trombozės", tags:TU+"::MI_klasifikacija"},
+ {t:"cloze", x:"{{c1::3 tipo}} MI – mirtinas MI be biožymenų", tags:TU+"::MI_klasifikacija"},
+ {t:"cloze", x:"{{c1::4b}} tipo MI – stento trombozė", tags:TU+"::MI_klasifikacija"},
+ {t:"cloze", x:"{{c1::5 tipo}} MI – su AVJO susijęs MI", tags:TU+"::MI_klasifikacija"},
+ {t:"cloze", x:"STEMI kriterijus (išskyrus V2–V3) – ST elevacija {{c1::≥ 1 mm}} ≥ 2 gretimose derivacijose", tags:TU+"::EKG"},
+ {t:"cloze", x:"STEMI kriterijus V2–V3 derivacijose moterims – ST elevacija {{c1::≥ 1,5 mm}}", tags:TU+"::EKG"},
+ {t:"qa", q:"Koks naujas EKG pokytis su išemijos klinika prilyginamas STEMI?", a:"Kairiosios kojytės šakos blokada", tags:TU+"::EKG"},
+ {t:"cloze", x:"Priekinis MI – ST elevacija derivacijose {{c1::V1–V4}}", tags:TU+"::EKG::Lokalizacija"},
+ {t:"cloze", x:"Šoninis MI – ST elevacija derivacijose {{c1::I, aVL, V5–V6}}", tags:TU+"::EKG::Lokalizacija"},
+ {t:"cloze", x:"Apatinis MI – ST elevacija derivacijose {{c1::II, III, aVF}}", tags:TU+"::EKG::Lokalizacija"},
+ {t:"qa", q:"Kuri arterija dažniausiai kalta esant priekiniam MI?", a:"LAD (priekinė tarpskilvelinė šaka)", tags:TU+"::EKG::Lokalizacija"},
+ {t:"qa", q:"Kuri arterija dažniausiai kalta esant apatiniam MI?", a:"RCA (dešinioji vainikinė arterija)", tags:TU+"::EKG::Lokalizacija"},
+ {t:"qa", q:"Kuri arterija kalta esant šoniniam MI?", a:"LCx (apsukamoji šaka)", tags:TU+"::EKG::Lokalizacija"},
+ {t:"qa", q:"Koks EKG požymis V1–V3 rodo užpakalinį MI?", a:"Reciprokinė ST depresija", tags:TU+"::EKG::Lokalizacija"},
+ {t:"qa", q:"Kokias derivacijas reikia užrašyti įtariant apatinį MI?", a:"V3R–V4R", tags:TU+"::EKG::Lokalizacija"},
+ {t:"qa", q:"Kurių vaistų vengiama esant dešiniojo skilvelio infarktui?", a:"Nitratų ir diuretikų", tags:TU+"::EKG::Lokalizacija"},
+ {t:"cloze", x:"MIBSTP / NKA atveju EKG gali būti be reikšmingų pokyčių apie {{c1::30 %}} atvejų", tags:TU+"::EKG"},
+ {t:"cloze", x:"Labai didelės rizikos NKA / MIBSTP atveju invazinė strategija atliekama per {{c1::< 2 val.}}", tags:TU+"::Rizika"},
+ {t:"cloze", x:"Didelės rizikos NKA / MIBSTP atveju invazinė strategija atliekama per {{c1::< 24 val.}}", tags:TU+"::Rizika"},
+ {t:"cloze", x:"Vidutinės rizikos NKA / MIBSTP atveju invazinė strategija atliekama per {{c1::< 72 val.}}", tags:TU+"::Rizika"},
+ {t:"cloze", x:"Didelę riziką rodo GRACE balas {{c1::> 140}}", tags:TU+"::Rizika"},
+ {t:"qa", q:"Ar kardiogeninis šokas yra labai didelės rizikos kriterijus NKA / MIBSTP atveju?", a:"Taip", tags:TU+"::Rizika"},
+ {t:"qa", q:"Kas priima sprendimą dėl revaskuliarizacijos metodo esant daugelio kraujagyslių ligai?", a:"Širdies komanda (Heart Team)", tags:TU+"::Revaskuliarizacija"},
+ {t:"qa", q:"Kuriam reperfuzijos metodui teikiama pirmenybė esant MISSTP?", a:"Pirminei PVAI", tags:TU+"::Reperfuzija"},
+ {t:"cloze", x:"Pirminė PVAI turi būti atlikta per {{c1::≤ 90 min}} nuo PMK", tags:TU+"::Reperfuzija"},
+ {t:"cloze", x:"Pervežant pacientą, pirminė PVAI turi būti atlikta per {{c1::≤ 120 min}} nuo PMK", tags:TU+"::Reperfuzija"},
+ {t:"cloze", x:"Jei PVAI negalima per 120 min, fibrinolizė pradedama per {{c1::≤ 10 min}} nuo PMK", tags:TU+"::Reperfuzija"},
+ {t:"cloze", x:"Reperfuzijos strategija taikoma MISSTP, kai simptomų trukmė {{c1::≤ 12 val.}}", tags:TU+"::Reperfuzija"},
+ {t:"qa", q:"Kur pervežamas pacientas po sėkmingos fibrinolizės?", a:"Į PVAI galintį centrą", tags:TU+"::Reperfuzija"},
+ {t:"cloze", x:"Po sėkmingos fibrinolizės vėlyva angiografija atliekama po {{c1::3–24 val.}}", tags:TU+"::Reperfuzija"},
+ {t:"qa", q:"Kada atliekama „gelbėjimo“ (rescue) PVAI?", a:"Kai per 60–90 min po fibrinolizės ST elevacija nesumažėja > 50 %", tags:TU+"::Reperfuzija"},
+ {t:"qa", q:"Ar bet kada buvęs intrakranijinis kraujavimas yra absoliuti fibrinolizės kontraindikacija?", a:"Taip", tags:TU+"::Reperfuzija::Fibrinolize"},
+ {t:"cloze", x:"Išeminis insultas per {{c1::3 mėn.}} – absoliuti fibrinolizės kontraindikacija", tags:TU+"::Reperfuzija::Fibrinolize"},
+ {t:"qa", q:"Ar įtariama aortos disekacija yra absoliuti fibrinolizės kontraindikacija?", a:"Taip", tags:TU+"::Reperfuzija::Fibrinolize"},
+ {t:"qa", q:"Ar nėštumas yra absoliuti ar santykinė fibrinolizės kontraindikacija?", a:"Santykinė", tags:TU+"::Reperfuzija::Fibrinolize"},
+ {t:"cloze", x:"MONA principe deguonis skiriamas tik esant SpO₂ {{c1::< 90 %}}", tags:TU+"::Gydymas"},
+ {t:"qa", q:"Kada MONA principe skiriamas morfinas?", a:"Kai skausmas nepasiduoda kitam gydymui", tags:TU+"::Gydymas"},
+ {t:"qa", q:"Kokiu mechanizmu veikia aspirinas?", a:"Negrįžtamai slopina tromboksano A2 sintezę (COX-1)", tags:TU+"::Gydymas::Vaistai"},
+ {t:"qa", q:"Kokius receptorius blokuoja P2Y12 inhibitoriai?", a:"ADP receptorius trombocituose", tags:TU+"::Gydymas::Vaistai"},
+ {t:"qa", q:"Kuriai vaistų grupei priklauso tirofibanas?", a:"GP IIb/IIIa inhibitoriams", tags:TU+"::Gydymas::Vaistai"},
+ {t:"qa", q:"Kuriai vaistų grupei priklauso bivalirudinas?", a:"Antikoaguliantams", tags:TU+"::Gydymas::Vaistai"},
+ {t:"cloze", x:"Po ŪVAS DAPT paprastai skiriama {{c1::12 mėn.}}", tags:TU+"::Gydymas::Prevencija"},
+ {t:"cloze", x:"Po ŪVAS MRA skiriami, kai KS IF {{c1::≤ 40 %}} ir yra ŠN ar diabetas", tags:TU+"::Gydymas::Prevencija"},
+ {t:"qa", q:"Kam rekomenduojama kardiologinė reabilitacija?", a:"Visiems po ŪVAS", tags:TU+"::Gydymas::Prevencija"}
+];
+
+const TEST_UVAS = [
+ {q:"Kuris pirmas veiksmas pacientui, atvykusiam su krūtinės skausmu?", o:["Troponino tyrimas","12 derivacijų EKG per ≤ 10 min","Krūtinės rentgenograma","GRACE balo skaičiavimas"], c:1, e:"EKG per ≤ 10 min pirmiausia padalija pacientus į MISSTP ir NKA / MIBSTP."},
+ {q:"Pacientas su tipišku skausmu, be ST pakilimo, hs-troponinas padidėjęs su dinamika. Diagnozė?", o:["NKA","MIBSTP","MISSTP","2 tipo MI"], c:1, e:"Troponinas su dinamika, bet ST pakilimo nėra, todėl tai MIBSTP."},
+ {q:"Kas lemia, ar išsivystys MISSTP, ar NKA / MIBSTP?", o:["Paciento amžius","Okliuzijos laipsnis ir trukmė","Troponino tipas","Skausmo lokalizacija"], c:1, e:"Visiška, ilgalaikė okliuzija sukelia MISSTP. Nevisiška ar laikina sukelia NKA / MIBSTP."},
+ {q:"Kuris teiginys apie plokštelės eroziją teisingas?", o:["Dažniausias mechanizmas (~⅔)","Būdinga plokštelėms su dideliu lipidų kiekiu","Endotelio pažeidimas be kapsulės plyšimo, dažniau moterims ir rūkaliams","Nesukelia trombozės"], c:2, e:"Erozija sudaro ~⅓ atvejų; plyšimas yra dažnesnis."},
+ {q:"Kada troponinas pasiekia piką?", o:["Po 30 min","Po 2–3 val.","Apie 12–24 val.","Po 7–14 parų"], c:2, e:"Pradeda kilti po 2–3 val., pikas 12–24 val., išlieka 7–14 parų."},
+ {q:"MI dėl anemijos ar aritmijos sukelto deguonies disbalanso be trombozės yra:", o:["1 tipo","2 tipo","3 tipo","4a tipo"], c:1, e:"2 tipo (antrinis) MI gydomas šalinant priežastį, o ne reperfuzija."},
+ {q:"ST elevacija II, III, aVF. Kuri arterija tikėtiniausiai kalta?", o:["LAD","LCx","RCA","Kairiosios VA kamienas"], c:2, e:"Apatinis MI dažniausiai susijęs su RCA, rečiau su LCx."},
+ {q:"Įtarus apatinį MI, ką būtina papildomai atlikti?", o:["Užrašyti V3R–V4R","Skirti nitratų","Skirti diuretikų","Atlikti krūvio mėginį"], c:0, e:"Dešiniojo skilvelio infarktas keičia taktiką: vengiama nitratų ir diuretikų."},
+ {q:"Kurios dvi būklės visada paneigiamos prieš patvirtinant ŪVAS?", o:["Pneumonija ir GERL","Aortos disekacija ir PATE","Kostochondritas ir pūslelinė","Panikos ataka ir pankreatitas"], c:1, e:"Šių būklių gydymas visiškai kitoks, kartais net priešingas."},
+ {q:"MIBSTP su kardiogeniniu šoku. Kada atliekama invazinė strategija?", o:["< 2 val.","< 24 val.","< 72 val.","Selektyviai"], c:0, e:"Kardiogeninis šokas yra labai didelės rizikos kriterijus, todėl reikia skubios strategijos per < 2 val."},
+ {q:"Koks GRACE balas rodo didelę riziką?", o:["> 80","> 109","> 140","> 200"], c:2, e:"GRACE > 140 reiškia didelę riziką ir ankstyvą (< 24 val.) invazinę strategiją."},
+ {q:"MISSTP, simptomai 3 val., PVAI centras pasiekiamas per 60 min. Kokia taktika?", o:["Fibrinolizė","Pirminė PVAI","Tik medikamentinis gydymas","AVJO"], c:1, e:"PVAI įmanoma per ≤ 120 min, todėl atliekama pirminė PVAI."},
+ {q:"MISSTP, PVAI neįmanoma per 120 min, kontraindikacijų nėra. Kokia taktika?", o:["Laukti PVAI","Fibrinolizė per ≤ 10 min, tada pervežimas į PVAI centrą","Tik aspirinas","GRACE ir planinė angiografija"], c:1, e:"Fibrinolizė pradedama per ≤ 10 min, o pacientas visada pervežamas į PVAI centrą."},
+ {q:"Kuri yra ABSOLIUTI fibrinolizės kontraindikacija?", o:["Nėštumas","Geriamųjų antikoaguliantų vartojimas","Išeminis insultas prieš 2 mėn.","Infekcinis endokarditas"], c:2, e:"Išeminis insultas per 3 mėn. yra absoliuti kontraindikacija; kiti variantai santykinės."},
+ {q:"Kada ŪVAS metu skiriamas deguonis?", o:["Visiems","Tik jei SpO₂ < 90 %","Tik MISSTP","Niekada"], c:1, e:"Pagal šiuolaikines gaires deguonis skiriamas tik esant hipoksemijai."},
+ {q:"Kuris vaistas yra P2Y12 inhibitorius?", o:["Tirofibanas","Tikagreloras","Fondaparinuksas","Aspirinas"], c:1, e:"P2Y12 inhibitoriai: tikagreloras, prasugrelis, klopidogrelis."},
+ {q:"Kiek paprastai trunka DAPT po ŪVAS?", o:["1 mėn.","3 mėn.","12 mėn.","Visą gyvenimą"], c:2, e:"Paprastai 12 mėn., individualizuojant pagal kraujavimo ir išeminę riziką."},
+ {q:"Koks MTL tikslas po ŪVAS?", o:["< 3,0 mmol/l","< 2,6 mmol/l","< 1,8 mmol/l","< 1,4 mmol/l ir ≥ 50 % sumažinimas"], c:3, e:"Didelio intensyvumo statinais siekiama MTL < 1,4 mmol/l ir ≥ 50 % sumažinimo."}
+];
+
 /* ---------- STRUKTŪRA ---------- */
 const AREAS = [
  {id:"chirurgija", name:"Chirurgija", c:"var(--scrub)", cs:"var(--scrub-soft)", blurb:"Širdies, kraujagyslių ir krūtinės chirurgija",
@@ -704,12 +937,14 @@ const AREAS = [
      {id:"plauciai-pleura", title:"Plaučių ir pleuros ligų chirurginė diagnostika ir gydymas", src:"Paskaita 2026-01-06 · 19 skaidrių", notes:NOTES_PLAUCIAI, cards:CARDS_PLAUCIAI, test:TEST_PLAUCIAI}
    ]}
   ]},
- {id:"kardiologija", name:"Kardiologija", c:"var(--heart)", cs:"var(--heart-soft)", blurb:"11 poskyrių · LVAS jau įkelta",
+ {id:"kardiologija", name:"Kardiologija", c:"var(--heart)", cs:"var(--heart-soft)", blurb:"11 poskyrių · įkelta LVAS ir ŪVAS",
   subs:[
    {id:"lis", name:"Lėtiniai išeminiai sindromai", topics:[
      {id:"lvas", title:"Lėtiniai vainikinių arterijų sindromai (LVAS)", src:"Paskaitos konspektas · 2024 m. ESC gairės", notes:NOTES_LVAS, cards:CARDS_LVAS, test:TEST_LVAS}
    ]},
-   {id:"uis", name:"Ūminiai išeminiai sindromai", topics:[]},
+   {id:"uis", name:"Ūminiai išeminiai sindromai", topics:[
+     {id:"uvas", title:"Ūminiai vainikinių arterijų sindromai (ŪVAS)", src:"Paskaitos konspektas · 2025–2026", notes:NOTES_UVAS, cards:CARDS_UVAS, test:TEST_UVAS}
+   ]},
    {id:"ah", name:"Arterinė hipertenzija", topics:[]},
    {id:"sn", name:"ŠN ir kardiomiopatijos", topics:[]},
    {id:"infekcines", name:"Infekcinės širdies ligos", topics:[]},
@@ -751,7 +986,7 @@ const ECG_PATH = "M0 34 H120 l8 -4 l8 4 H170 l6 8 l10 -40 l10 46 l8 -14 H260 l10
 /* ---------- DALYKO TEMOS (LSMU aprašas) ---------- */
 const SYL = [
  {id:"k", name:"Kardiologija", c:"var(--heart)", cs:"var(--heart-soft)", items:[
-  ["1.1","Įvadinė paskaita"],["1.2","Dažniausi kardiologiniai simptomai ir sindromai"],["1.3","Lėtiniai išeminiai sindromai",{area:"kardiologija",sub:"lis",topic:"lvas"}],["1.4","Ūminiai išeminiai sindromai"],["1.5","Arterinė hipertenzija"],["1.6","Širdies nepakankamumas ir miokardo ligos"],["1.7","Širdies ritmo sutrikimai"],["1.8","Širdies laidumo sutrikimai"],["1.9","Įgytos ir įgimtos širdies ydos"],["1.10","Uždegiminės širdies ligos"],["1.10.1","Uždegiminės širdies ligos: laboratorinė medicina"],["1.11","Ūmios būklės kardiologijoje – ankstyva diagnostika ir pradinis gydymas"],["1.12","Instrumentiniai diagnostikos metodai kardiologijoje"]]},
+  ["1.1","Įvadinė paskaita"],["1.2","Dažniausi kardiologiniai simptomai ir sindromai"],["1.3","Lėtiniai išeminiai sindromai",{area:"kardiologija",sub:"lis",topic:"lvas"}],["1.4","Ūminiai išeminiai sindromai",{area:"kardiologija",sub:"uis",topic:"uvas"}],["1.5","Arterinė hipertenzija"],["1.6","Širdies nepakankamumas ir miokardo ligos"],["1.7","Širdies ritmo sutrikimai"],["1.8","Širdies laidumo sutrikimai"],["1.9","Įgytos ir įgimtos širdies ydos"],["1.10","Uždegiminės širdies ligos"],["1.10.1","Uždegiminės širdies ligos: laboratorinė medicina"],["1.11","Ūmios būklės kardiologijoje – ankstyva diagnostika ir pradinis gydymas"],["1.12","Instrumentiniai diagnostikos metodai kardiologijoje"]]},
  {id:"c", name:"Chirurgija", c:"var(--scrub)", cs:"var(--scrub-soft)", items:[
   ["2.1","Širdies chirurginių operacijų principai, pooperacinis laikotarpis"],["2.2","Išeminės širdies ligos chirurginis gydymas"],["2.3","Perikardo ligos ir širdies augliai, jų chirurginis gydymas"],["2.4","Įgytų širdies vožtuvų ydų chirurginis gydymas"],["2.5","Krūtininės aortos ligos, jų chirurginis gydymas"],["2.6","Aortos disekacija, chirurginis gydymas"],["2.7","Širdies nepakankamumo chirurginis gydymas"],["2.8","Įvadas į krūtinės chirurgiją. Pagrindiniai chi…"],["2.9","Krūtinės traumų diagnostika, konservatyvus ir chirurginis gydymas"],["2.10","Plaučių ir pleuros ligų chirurginė diagnostika ir gydymas",{area:"chirurgija",sub:"krutines",topic:"plauciai-pleura"}],["2.11","Tarpuplaučio ir diafragmos ligų chirurginė diagnostika ir gydymas"],["2.12","Ūmi ir lėtinė galūnių išemija"],["2.13","Brachiocefalinių arterijų ligos"],["2.14","Pilvinės aortos ir periferinių arterijų aneurizmos"],["2.15","Venų ligos"]]},
  {id:"p", name:"Pulmonologija", c:"var(--lung)", cs:"var(--lung-soft)", items:[
