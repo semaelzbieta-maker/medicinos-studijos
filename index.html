@@ -155,6 +155,24 @@ mark,.hl{background:var(--mark);color:var(--mark-ink);padding:0 .2em;border-radi
 .tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
 /* konspektas */
+.shared{display:grid;gap:10px;margin-bottom:22px;padding:14px;border:1.5px solid var(--c,var(--scrub));border-radius:var(--radius);background:var(--surface)}
+.shared .sh-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.shared .sh-head .section-label{margin:0}
+.shared .sh-head .btn{margin-left:auto;padding:5px 10px;font-size:12.5px}
+.sh-list{display:grid;gap:8px}
+.sh-item{border-radius:10px;padding:10px 12px;background:var(--cs,var(--bg));position:relative}
+.sh-meta{font-size:12px;color:var(--muted);margin-bottom:4px;padding-right:70px}
+.sh-meta b{color:var(--ink)}
+.sh-text{white-space:pre-wrap;font-size:14.5px;line-height:1.5;word-break:break-word}
+.sh-del{position:absolute;top:8px;right:8px;border:0;background:transparent;color:var(--muted);font-size:12px;padding:4px 6px;border-radius:6px}
+.sh-del:hover,.sh-del.arm{color:#c0392b;background:rgba(192,57,43,.08)}
+.sh-form{display:grid;gap:8px}
+.sh-form input,.sh-form textarea{width:100%;box-sizing:border-box;font:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface);color:var(--ink)}
+.sh-form textarea{min-height:90px;resize:vertical}
+.sh-form .row2{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sh-form .row2 input{flex:1;min-width:140px}
+.sh-form .btn.go{background:var(--c,var(--scrub));color:#fff;border-color:transparent}
+.sh-empty{font-size:13.5px;color:var(--muted)}
 .mynotes{display:grid;gap:10px}
 .mynotes textarea{width:100%;min-height:260px;resize:vertical;font:inherit;font-size:15px;line-height:1.55;border:1.5px solid var(--line);border-radius:var(--radius);padding:14px;background:var(--surface);color:var(--ink);box-sizing:border-box}
 .mynotes textarea:focus{outline:none;border-color:var(--c,var(--scrub))}
@@ -5105,6 +5123,48 @@ function rowsFor(topics, a){
 }
 
 
+
+/* ---------- bendri užrašai (Netlify funkcija) ---------- */
+const NOTES_API = (()=>{ try{ if(window.NOTES_API_OVERRIDE) return window.NOTES_API_OVERRIDE; const h=location.hostname; if(/netlify\.app$/.test(h)||h==="localhost"||h==="127.0.0.1") return "/api/notes"; }catch(e){} return null; })();
+function sharedBox(key){
+  if(!NOTES_API) return `<div class="shared"><div class="sh-head"><p class="section-label">👭 Bendri užrašai</p></div><p class="sh-empty">Bendrus užrašus, kuriuos mato visos, galima skaityti ir rašyti svetainėje <b>tikmedicinosmergaite.netlify.app</b>.</p></div>`;
+  return `<div class="shared" data-shared="${key}">
+  <div class="sh-head"><p class="section-label">👭 Bendri užrašai · mato visi, kas turi nuorodą</p><button class="btn" data-shref>Atnaujinti</button></div>
+  <div class="sh-list" aria-live="polite"><p class="sh-empty">Kraunama…</p></div>
+  <div class="sh-form"><textarea data-shtext maxlength="4000" placeholder="Ką akcentavo dėstytojas? Ko klausė per atsiskaitymą?"></textarea>
+  <div class="row2"><input data-shname maxlength="40" placeholder="Tavo vardas" aria-label="Tavo vardas"><button class="btn go" data-shadd>Pridėti visiems</button></div>
+  <span class="note" data-shmsg aria-live="polite"></span></div></div>`;
+}
+function fmtWhen(t){ try{ const d=new Date(t); return d.toLocaleDateString("lt-LT")+" "+d.toLocaleTimeString("lt-LT",{hour:"2-digit",minute:"2-digit"}); }catch(e){ return ""; } }
+function bindShared(root){
+  root.querySelectorAll("[data-shared]").forEach(box=>{
+    const key=box.dataset.shared, list=box.querySelector(".sh-list"), msg=box.querySelector("[data-shmsg]");
+    const name=box.querySelector("[data-shname]"), ta=box.querySelector("[data-shtext]");
+    name.value=store.get("shared:name","");
+    const draw=items=>{
+      if(!items.length){ list.innerHTML=`<p class="sh-empty">Dar nėra bendrų užrašų. Būk pirma!</p>`; return; }
+      list.innerHTML=items.map(it=>`<div class="sh-item"><div class="sh-meta"><b>${esc(it.author)}</b> · ${fmtWhen(it.t)}</div><div class="sh-text">${esc(it.text)}</div><button class="sh-del" data-del="${esc(it.id)}">Ištrinti</button></div>`).join("");
+      list.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{
+        if(!b.classList.contains("arm")){ b.classList.add("arm"); b.textContent="Tikrai?"; setTimeout(()=>{b.classList.remove("arm"); b.textContent="Ištrinti";},3000); return; }
+        b.disabled=true;
+        fetch(NOTES_API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({key,action:"delete",id:b.dataset.del})}).then(r=>r.json()).then(load).catch(()=>{msg.textContent="Nepavyko ištrinti – patikrink ryšį."; b.disabled=false;});
+      });
+    };
+    const load=()=>fetch(NOTES_API+"?key="+encodeURIComponent(key),{cache:"no-store"}).then(r=>r.ok?r.json():Promise.reject()).then(d=>draw(d.items||[])).catch(()=>{list.innerHTML=`<p class="sh-empty">Nepavyko įkelti bendrų užrašų – patikrink interneto ryšį.</p>`;});
+    box.querySelector("[data-shref]").onclick=load;
+    box.querySelector("[data-shadd]").onclick=()=>{
+      const text=ta.value.trim(); if(!text){ msg.textContent="Pirma parašyk užrašą."; ta.focus(); return; }
+      const author=name.value.trim(); store.set("shared:name",author);
+      const btn=box.querySelector("[data-shadd]"); btn.disabled=true; msg.textContent="Saugoma…";
+      fetch(NOTES_API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({key,action:"add",text,author})})
+        .then(r=>r.ok?r.json():Promise.reject()).then(()=>{ta.value=""; msg.textContent="Pridėta ✓ – mato visi."; load();})
+        .catch(()=>{msg.textContent="Nepavyko išsaugoti – patikrink ryšį ir bandyk dar kartą.";})
+        .finally(()=>{btn.disabled=false;});
+    };
+    load();
+  });
+}
+
 /* ---------- mano užrašai ---------- */
 const NOTE_PREFIX="mynote:";
 function noteBox(key,title,hint,cls){
@@ -5155,8 +5215,8 @@ function render(){
   const topics = s? s.topics : a.topics;
   const t=topics.find(x=>x.id===st.topic);
   if(!t){
-    v.innerHTML = `<p class="section-label">${s?esc(s.name):a.name} · temos</p>${rowsFor(topics,a)}`+noteBox("sub:"+M.id+":"+a.id+":"+(s?s.id:"-"),"Mano užrašai: "+(s?esc(s.name):a.name),"Bendri šio poskyrio užrašai: ką dėstytojai akcentavo, ko klausė per atsiskaitymą.","subnotes");
-    v.style.setProperty("--c",a.c); v.style.setProperty("--cs",a.cs); bindNotes(v);
+    v.innerHTML = `<p class="section-label">${s?esc(s.name):a.name} · temos</p>${rowsFor(topics,a)}<div class="subnotes">`+sharedBox("sub:"+M.id+":"+a.id+":"+(s?s.id:"-"))+noteBox("sub:"+M.id+":"+a.id+":"+(s?s.id:"-"),"Mano asmeniniai užrašai: "+(s?esc(s.name):a.name),"Matai tik tu, šiame įrenginyje.","")+`</div>`;
+    v.style.setProperty("--c",a.c); v.style.setProperty("--cs",a.cs); bindNotes(v); bindShared(v);
     v.querySelectorAll("[data-topic]").forEach(b=>b.onclick=()=>{st.topic=b.dataset.topic;render();window.scrollTo(0,0)});
     return;
   }
@@ -5166,7 +5226,7 @@ function render(){
   v.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{st.mode=b.dataset.tab;render()});
   const pane=$("#pane");
   if(st.mode==="notes") pane.innerHTML=`<div class="notes">${t.notes}</div>`;
-  else if(st.mode==="my"){ pane.innerHTML=noteBox("topic:"+t.id,"","Čia rašyk, ką gydytojai akcentuoja egzaminui. Užrašai saugomi automatiškai šiame įrenginyje ir naršyklėje. Norėdama perkelti į kitą įrenginį, atsisiųsk juos ir įkelk ten."); bindNotes(pane); }
+  else if(st.mode==="my"){ pane.innerHTML=sharedBox("topic:"+t.id)+noteBox("topic:"+t.id,"Mano asmeniniai užrašai","Matai tik tu – saugoma šiame įrenginyje ir naršyklėje. Norėdama perkelti į kitą įrenginį, atsisiųsk ir įkelk ten."); bindNotes(pane); bindShared(pane); }
   else if(st.mode==="cards") renderCards(pane,t);
   else renderTest(pane,t);
 }
