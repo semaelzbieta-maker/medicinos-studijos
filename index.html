@@ -1,7 +1,7 @@
 <!doctype html><html lang="lt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>🩷 Tik medicinos mergaitė</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
 /* Layout: a narrow study column; areas as coloured index tabs, the topic opens into three study modes */
 :root{
@@ -274,6 +274,59 @@ figcaption{font-size:13px;color:var(--muted);margin-top:8px}
 .result h3{font-size:22px}
 .result p{margin:6px 0 0;opacity:.85}
 @media (max-width:520px){.modes .mode b{font-size:14px}.flash .q{font-size:19px}.topic-head h2{font-size:21px}}
+
+/* ===== Dizainas A · Klinikinis ===== */
+:root{
+  --bg:#F4F7F8; --surface:#FFFFFF; --ink:#10222B; --muted:#5B6B73; --line:#DCE5E8;
+  --scrub:#0E7C7B; --scrub-soft:#E3F2F1;
+  --heart:#B42318; --heart-soft:#FDE8E8;
+  --lung:#2F5DA8; --lung-soft:#E4ECFA;
+  --hero:#FFFFFF; --hero-ink:#10222B; --hero-hl:#0E7C7B;
+  --good:#1F7A4A; --good-soft:#DFF2E7; --bad:#B42318; --bad-soft:#FDE8E8; --warn:#A15C07; --warn-soft:#FFF4DE;
+  --display:"Inter", "Segoe UI", system-ui, sans-serif;
+  --body:"Inter", "Segoe UI", system-ui, sans-serif;
+  --radius:16px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1A1F; --surface:#15252C; --ink:#E4EEF0; --muted:#93A6AD; --line:#253A43;
+  --scrub:#3FBDB4; --scrub-soft:#133A39; --heart:#F28B80; --heart-soft:#3A1F1C; --lung:#8DB4F2; --lung-soft:#18283D;
+  --hero:#15252C; --hero-ink:#E4EEF0; --hero-hl:#3FBDB4;
+  --good:#5FD08F; --good-soft:#15352A; --bad:#F28B80; --bad-soft:#3A1F1C; --warn:#E8B458; --warn-soft:#3A2C10}}
+:root[data-theme="dark"]{
+  --bg:#0E1A1F; --surface:#15252C; --ink:#E4EEF0; --muted:#93A6AD; --line:#253A43;
+  --scrub:#3FBDB4; --scrub-soft:#133A39; --heart:#F28B80; --heart-soft:#3A1F1C; --lung:#8DB4F2; --lung-soft:#18283D;
+  --hero:#15252C; --hero-ink:#E4EEF0; --hero-hl:#3FBDB4;
+  --good:#5FD08F; --good-soft:#15352A; --bad:#F28B80; --bad-soft:#3A1F1C; --warn:#E8B458; --warn-soft:#3A2C10}
+body{background-image:none;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{letter-spacing:-.015em}
+.brand .logo{border-radius:12px;width:38px;height:38px}
+.brand small,.hero .hi,.mod .eyebrow,.section-label,.topic-head .eyebrow,.flash .side,.mode .ic,.call strong:first-child{font-family:var(--body);font-weight:700;letter-spacing:.08em}
+.hero{border-radius:20px;box-shadow:0 1px 2px rgba(16,34,43,.04)}
+.hero h2{font-size:28px}
+.hero .stats span{background:var(--bg);border-color:var(--line)}
+.ecg path{stroke:var(--scrub)}
+.mod,.area,.row,.box,.topic-head,.qcard,.case,.p-hero,.blk,.mode{box-shadow:0 1px 2px rgba(16,34,43,.04)}
+.mod::before{height:4px}
+.mod:hover,.mode:hover{box-shadow:0 8px 24px -14px rgba(14,124,123,.45)}
+.area{border-radius:16px}
+.row:hover,.area:hover{border-color:var(--scrub)}
+.topic-head{border-top-width:4px}
+.tabs{gap:2px;border-bottom:1px solid var(--line);padding-bottom:0}
+.tabs button{border:0;border-radius:0;background:transparent;color:var(--muted);padding:10px 12px 12px;border-bottom:2.5px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{background:transparent;color:var(--scrub);border-color:var(--scrub);font-weight:700}
+.call.exam{--k:var(--scrub);--ks:var(--scrub-soft)}
+.call.tip{--k:var(--lung);--ks:var(--lung-soft)}
+.call{border-left-width:4px;border-radius:12px}
+th{text-transform:none}
+.btn{border-radius:12px}
+.btn.primary,.btn.go{box-shadow:0 2px 8px -2px rgba(14,124,123,.4)}
+.seg button[aria-pressed="true"]{background:var(--scrub);color:#fff}
+.theme button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.opt{background:var(--surface)}
+.expl{background:var(--scrub-soft);border-left:3px solid var(--scrub)}
+.result{background:var(--scrub);color:#fff}
+html .ai-fab{background:var(--ink);color:var(--bg);box-shadow:0 8px 24px rgba(16,34,43,.25)}
+html .ai-panel{box-shadow:0 18px 50px rgba(16,34,43,.25)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
