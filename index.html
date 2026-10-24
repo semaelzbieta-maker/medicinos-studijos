@@ -245,6 +245,7 @@ figcaption{font-size:13px;color:var(--muted);margin-top:8px}
 .note{font-size:13px;color:var(--muted)}
 
 /* test */
+.ai-on body{padding-bottom:70px}
 .more{margin-top:18px;padding:14px;border:1.5px dashed var(--line);border-radius:var(--radius);display:grid;gap:8px}
 .more-h{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center}
 .more .bar{display:flex;gap:8px;flex-wrap:wrap}
@@ -6248,6 +6249,97 @@ function renderTest(pane,t){
   }
   draw();
 }
+
+/* ---------- „Klausk Claude“ langelis ---------- */
+(function(){
+  const css=`.ai-fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:60;border:0;border-radius:999px;padding:12px 16px;background:var(--scrub);color:#fff;font:inherit;font-weight:700;font-size:14px;box-shadow:0 6px 20px rgba(60,30,120,.28);cursor:pointer;display:none}
+.ai-on .ai-fab{display:block}
+.ai-panel{position:fixed;z-index:61;right:16px;bottom:16px;width:min(420px,calc(100vw - 32px));height:min(640px,calc(100vh - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 50px rgba(30,15,60,.3);display:none;flex-direction:column;overflow:hidden}
+.ai-panel.open{display:flex}
+@media (max-width:560px){.ai-panel{right:0;left:0;bottom:0;width:100%;height:85vh;border-radius:18px 18px 0 0}}
+.ai-top{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.ai-top b{flex:1;font-size:15px}
+.ai-top button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;cursor:pointer;padding:4px 8px;border-radius:8px}
+.ai-ctx{font-size:12px;color:var(--muted);padding:6px 14px;border-bottom:1px solid var(--line);background:var(--bg)}
+.ai-log{flex:1;overflow:auto;padding:12px 14px;display:grid;gap:10px;align-content:start}
+.ai-msg{padding:10px 12px;border-radius:12px;font-size:14.5px;line-height:1.5;word-break:break-word}
+.ai-msg.u{background:var(--scrub);color:#fff;justify-self:end;max-width:85%;white-space:pre-wrap}
+.ai-msg.a{background:var(--bg);border:1px solid var(--line)}
+.ai-msg.a ul{margin:4px 0 4px 18px;padding:0}
+.ai-msg.a p{margin:0 0 6px}
+.ai-chips{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 8px}
+.ai-chips button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:5px 10px;font:inherit;font-size:12.5px;cursor:pointer}
+.ai-form{display:flex;gap:8px;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+.ai-form textarea{flex:1;resize:none;height:44px;max-height:120px;font:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:12px;padding:10px;background:var(--bg);color:var(--ink)}
+.ai-form button{border:0;border-radius:12px;padding:0 14px;background:var(--scrub);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.ai-note{font-size:12px;color:var(--muted);padding:0 14px 6px}`;
+  const s=document.createElement("style"); s.textContent=css; document.head.appendChild(s);
+  const fab=document.createElement("button"); fab.className="ai-fab"; fab.type="button"; fab.textContent="💬 Klausk Claude"; fab.setAttribute("aria-label","Atidaryti pokalbį su Claude");
+  const panel=document.createElement("div"); panel.className="ai-panel"; panel.setAttribute("role","dialog"); panel.setAttribute("aria-label","Pokalbis su Claude");
+  panel.innerHTML=`<div class="ai-top"><b>💬 Klausk Claude</b><button type="button" data-ai="new">Naujas pokalbis</button><button type="button" data-ai="close" aria-label="Uždaryti">✕</button></div>
+  <div class="ai-ctx"></div><div class="ai-log" aria-live="polite"></div>
+  <div class="ai-chips"></div><div class="ai-note"></div>
+  <form class="ai-form"><textarea placeholder="Paklausk, kas neaišku…" aria-label="Klausimas Claude"></textarea><button type="submit">Siųsti</button></form>`;
+  document.body.appendChild(fab); document.body.appendChild(panel);
+  const log=panel.querySelector(".ai-log"), ctxEl=panel.querySelector(".ai-ctx"), chips=panel.querySelector(".ai-chips"), note=panel.querySelector(".ai-note"), ta=panel.querySelector("textarea"), sendBtn=panel.querySelector(".ai-form button");
+  let turns=[], ctl=null, busy=false;
+  function md(t){
+    const e=esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+    const out=[]; let ul=false;
+    e.split("\n").forEach(l=>{ const m=l.match(/^\s*[-•*]\s+(.*)/)||l.match(/^\s*\d+[.)]\s+(.*)/);
+      if(m){ if(!ul){out.push("<ul>");ul=true;} out.push("<li>"+m[1]+"</li>"); }
+      else { if(ul){out.push("</ul>");ul=false;} if(l.trim()) out.push("<p>"+l.replace(/^#+\s*/,"")+"</p>"); } });
+    if(ul) out.push("</ul>"); return out.join("");
+  }
+  function curTopic(){ try{ const M=curMod(); if(!M) return null; const a=M.areas.find(x=>x.id===st.area); if(!a) return {a:null}; const s=a.subs?a.subs.find(x=>x.id===st.sub):null; const ts=s?s.topics:(a.subs?[]:a.topics); return {a, s, t:(ts||[]).find(x=>x.id===st.topic)||null}; }catch(e){ return null; } }
+  function ctxText(){
+    const c=curTopic();
+    if(c&&c.t) return {label:"Tema: "+c.t.title, data:`Studentė dabar skaito temą „${c.t.title}“. Konspekto tekstas:\n${topicText(c.t,16000)}`};
+    if(c&&c.s) return {label:"Poskyris: "+c.s.name, data:`Studentė naršo poskyrį „${c.s.name}“. Įkeltos temos: ${c.s.topics.map(x=>x.title).join("; ")||"(dar nėra)"}.`};
+    if(c&&c.a) return {label:"Sritis: "+c.a.name, data:`Studentė naršo sritį „${c.a.name}“.`};
+    return {label:"Bendras pokalbis", data:"Studentė yra pradiniame puslapyje."};
+  }
+  function drawChips(){
+    const c=curTopic();
+    const list=c&&c.t?["Paaiškink paprasčiau, kas svarbiausia","Ką šioje temoje dažniausiai klausia egzamine?","Užduok man 3 klausimus pasitikrinti","Sukurk atmintinę įsiminti"]:["Kaip efektyviai mokytis šio modulio?","Paaiškink man vieną sąvoką"];
+    chips.innerHTML=list.map(x=>`<button type="button">${esc(x)}</button>`).join("");
+    chips.querySelectorAll("button").forEach(b=>b.onclick=()=>{ ta.value=b.textContent; send(); });
+  }
+  function drawLog(){
+    log.innerHTML=turns.length?turns.map(m=>`<div class="ai-msg ${m.role==="user"?"u":"a"}">${m.role==="user"?esc(m.content):md(m.content)}</div>`).join(""):`<div class="ai-msg a"><p>Labas! Klausk, kas neaišku – atsakysiu remdamasis atidaryta tema. Galiu paaiškinti, sukurti klausimų ar atmintinių.</p></div>`;
+    log.scrollTop=log.scrollHeight;
+  }
+  function openPanel(){ const c=ctxText(); ctxEl.textContent=c.label; drawChips(); drawLog(); panel.classList.add("open"); fab.style.display="none"; setTimeout(()=>ta.focus(),50); }
+  function closePanel(){ panel.classList.remove("open"); fab.style.display=""; }
+  fab.onclick=openPanel;
+  panel.querySelector('[data-ai="close"]').onclick=closePanel;
+  panel.querySelector('[data-ai="new"]').onclick=()=>{ if(ctl) ctl.abort(); turns=[]; note.textContent=""; drawLog(); };
+  ta.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); send(); } });
+  panel.querySelector("form").onsubmit=e=>{ e.preventDefault(); if(busy){ if(ctl) ctl.abort(); } else send(); };
+  async function send(){
+    const q=ta.value.trim(); if(!q||busy||!AI) return;
+    ta.value=""; turns.push({role:"user",content:q});
+    const ans={role:"assistant",content:""}; turns.push(ans); drawLog();
+    const bubble=log.lastElementChild; bubble.innerHTML="<p>Galvoju…</p>";
+    busy=true; sendBtn.textContent="Stop"; note.textContent=""; ctl=new AbortController();
+    const c=ctxText(); ctxEl.textContent=c.label;
+    const rules=`Tu esi Claude ir padedi LSMU medicinos fakulteto 4 kurso studentėms mokytis modulio „Širdies, krūtinės ir periferinių kraujagyslių ligos“ (kardiologija, chirurgija, pulmonologija). Atsakyk lietuviškai, aiškiai ir glaustai, naudok trumpus sąrašus ir paryškink (**…**) svarbiausius dalykus. Pirmiausia remkis žemiau pateiktu konspektu; jei atsakymo konspekte nėra, atsakyk pagal šiuolaikines gaires ir trumpai pažymėk, kad to konspekte nėra. Jei studentė prašo naujo konspekto iš skaidrių, paaiškink, kad skaidres reikia įkelti į pokalbį su Claude, kuris prižiūri svetainę – čia gali padėti suprasti ir pasikartoti.\n\nKONTEKSTAS: ${c.data}`;
+    const history=turns.slice(0,-1).slice(-12);
+    try{
+      const r=await AI([{role:"user",content:rules}].concat(history),{cache:false,signal:ctl.signal,onText:({text})=>{ ans.content=text; bubble.innerHTML=md(text); log.scrollTop=log.scrollHeight; }});
+      ans.content=r.text; bubble.innerHTML=md(r.text);
+      if(r.truncated) note.textContent="Atsakymas nukirptas – paklausk siauriau.";
+    }catch(e){
+      if(e&&e.text){ ans.content=e.text; bubble.innerHTML=md(e.text); } else { turns.pop(); }
+      if(!(e&&e.code==="cancelled")) note.textContent=AI_ERR(e&&e.code);
+      if(e&&["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(e.code)){ AI=null; document.documentElement.classList.remove("ai-on"); closePanel(); }
+      drawLog();
+    }
+    busy=false; sendBtn.textContent="Siųsti"; ctl=null;
+  }
+  const watch=setInterval(()=>{ if(AI){ document.documentElement.classList.add("ai-on"); clearInterval(watch); } },500);
+  setTimeout(()=>clearInterval(watch),20000);
+})();
 
 /* ---------- klinikinės situacijos ---------- */
 function renderCases(pane,t){
