@@ -5690,7 +5690,7 @@ const ST_NAMES = ["Neliesta","Mokausi","Išmokta"];
 const MODULES = [
  {id:"skpkl", name:"Širdies, krūtinės ir periferinių kraujagyslių ligos", until:"2026-11-04", areas:AREAS, syl:SYL}
 ];
-const st = {mode:"notes", module:null, area:null, sub:null, topic:null};
+const st = {mode:"notes", module:null, area:null, group:null, sub:null, topic:null};
 const curMod = () => MODULES.find(m=>m.id===st.module);
 const modTopics = m => m.areas.flatMap(a=>allTopics(a));
 function daysLeft(iso){ const t=new Date(); const a=Date.UTC(t.getFullYear(),t.getMonth(),t.getDate()); const [y,mo,d]=iso.split("-").map(Number); return Math.round((Date.UTC(y,mo-1,d)-a)/864e5); }
@@ -5730,12 +5730,14 @@ function renderModes(){
 }
 
 function renderCrumbs(){
-  const parts=[{label:"Moduliai",go:()=>{st.module=st.area=st.sub=st.topic=null}}];
+  const parts=[{label:"Moduliai",go:()=>{st.module=st.area=st.group=st.sub=st.topic=null}}];
   const M=curMod();
-  if(M) parts.push({label:M.name,go:()=>{st.area=st.sub=st.topic=null}});
+  if(M) parts.push({label:M.name,go:()=>{st.area=st.group=st.sub=st.topic=null}});
   const a=M&&st.mode!=="progress"&&M.areas.find(x=>x.id===st.area);
-  if(a) parts.push({label:a.name,go:()=>{st.sub=st.topic=null}});
+  if(a) parts.push({label:a.name,go:()=>{st.group=st.sub=st.topic=null}});
   const s=a&&a.subs&&a.subs.find(x=>x.id===st.sub);
+  const grp=a&&a.subs&&(s&&s.g?s.g:st.group);
+  if(grp) parts.push({label:grp,go:()=>{st.group=grp;st.sub=st.topic=null}});
   if(s) parts.push({label:s.name,go:()=>{st.topic=null}});
   const el=$("#crumbs"); el.innerHTML="";
   if(parts.length===1){el.hidden=true;return} el.hidden=false;
@@ -5844,12 +5846,19 @@ function render(){
       const n=count(allTopics(x),st.mode);
       const chips = x.subs ? `<div class="chips">${(x.subs.some(s=>s.g)?[...new Set(x.subs.map(s=>s.g))]:x.subs.map(s=>s.name)).map(n=>`<span class="chip">${esc(n)}</span>`).join("")}</div>`:"";
       return `<button class="area" data-area="${x.id}" style="--c:${x.c};--cs:${x.cs}"><span class="tab"></span><span class="in"><h3>${x.name}</h3><p>${n} ${unit(st.mode)} · ${esc(x.blurb)}</p>${chips}</span><span class="go" aria-hidden="true">→</span></button>`;}).join("")}</div>`;
-    v.querySelectorAll("[data-area]").forEach(b=>b.onclick=()=>{st.area=b.dataset.area;render()});
+    v.querySelectorAll("[data-area]").forEach(b=>b.onclick=()=>{st.area=b.dataset.area;st.group=null;render()});
+    return;
+  }
+  if(a.subs){ const cs=a.subs.find(x=>x.id===st.sub); if(cs&&cs.g) st.group=cs.g; if(st.group&&!a.subs.some(x=>x.g===st.group)) st.group=null; }
+  if(a.subs && !st.sub && a.subs.some(x=>x.g) && !st.group){
+    const gs=[...new Set(a.subs.map(x=>x.g))];
+    v.innerHTML = `<p class="section-label">${a.name} · poskyriai</p><div class="list">${gs.map(g=>{const ss=a.subs.filter(x=>x.g===g); const ts=ss.flatMap(x=>x.topics); return `<button class="row" data-grp="${esc(g)}" style="--c:${a.c}"><span class="dot"></span><span class="t"><h4>${esc(g)}</h4><p>${ss.length} temos pagal programą · ${ts.length} įkelta</p></span><span class="cnt">${count(ts,st.mode)} ${unit(st.mode)}</span></button>`;}).join("")}</div>`;
+    v.querySelectorAll("[data-grp]").forEach(b=>b.onclick=()=>{st.group=b.dataset.grp;render();window.scrollTo(0,0)});
     return;
   }
   if(a.subs && !st.sub){
     const subRow = s=>`<button class="row" data-sub="${s.id}" style="--c:${a.c}"><span class="dot"></span><span class="t"><h4>${esc(s.name)}</h4><p>${s.topics.length} ${s.topics.length===1?"tema":"temų"}</p></span><span class="cnt">${count(s.topics,st.mode)} ${unit(st.mode)}</span></button>`;
-    const groups=[...new Set(a.subs.map(s=>s.g||""))];
+    const groups=st.group?[st.group]:[...new Set(a.subs.map(s=>s.g||""))];
     v.innerHTML = groups.map((g,gi)=>`<p class="section-label"${gi?' style="margin-top:20px"':""}>${g?esc(g):a.name+" · poskyriai"}</p><div class="list">${a.subs.filter(s=>(s.g||"")===g).map(subRow).join("")}</div>`).join("");
     v.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>{st.sub=b.dataset.sub;render()});
     return;
