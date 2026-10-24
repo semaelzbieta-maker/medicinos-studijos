@@ -376,6 +376,18 @@ html .ai-panel{box-shadow:0 18px 50px rgba(16,34,43,.25)}
 .modes .mode[aria-pressed="true"] b{font-weight:700}
 .modes .mode .ico,.modes .mode[aria-pressed="true"] .ico{color:inherit}
 html .ai-fab{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+
+/* paaiškinimai užvedus pelę */
+.gl{cursor:help;text-decoration:underline dotted color-mix(in srgb,var(--scrub) 75%,transparent);text-decoration-thickness:1.5px;text-underline-offset:3px}
+.gl:focus-visible{outline:2px solid var(--scrub);outline-offset:2px;border-radius:3px}
+.gl-tip{position:fixed;z-index:70;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 12px 32px rgba(16,34,43,.2);font-size:13.5px;line-height:1.45;display:grid;gap:7px}
+.gl-tip[hidden]{display:none!important}
+.gl-t{font-size:14.5px;font-weight:700}
+.gl-d{margin:0}
+.gl-load{color:var(--muted)}
+.gl-n{background:var(--scrub-soft);border-radius:10px;padding:8px 10px;font-weight:600}
+.gl-n span{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--scrub);font-weight:700;margin-bottom:1px}
+.gl-src{color:var(--muted);font-size:11.5px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -6011,7 +6023,7 @@ function render(){
   v.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{st.mode=b.dataset.tab;render()});
   v.querySelector("[data-back]").onclick=()=>{st.topic=null;render();window.scrollTo(0,0)};
   const pane=$("#pane");
-  if(st.mode==="notes") pane.innerHTML=`<div class="notes">${t.notes}</div>`;
+  if(st.mode==="notes"){ pane.innerHTML=`<div class="notes">${t.notes}</div>`; glossify(pane,t); }
   else if(st.mode==="cases") renderCases(pane,t);
   else if(st.mode==="my"){ pane.innerHTML=sharedBox("topic:"+t.id)+noteBox("topic:"+t.id,"Mano asmeniniai užrašai","Matai tik tu – saugoma šiame įrenginyje ir naršyklėje. Norėdama perkelti į kitą įrenginį, atsisiųsk ir įkelk ten."); bindNotes(pane); bindShared(pane); }
   else if(st.mode==="cards") renderCards(pane,t);
@@ -6307,7 +6319,7 @@ kvn:[
 
 /* ---------- Claude AI (veikia atidarius per Claude) ---------- */
 let AI=null;
-try{ if(window.claude && typeof window.claude.use==="function") window.claude.use("sample").then(s=>{ AI=s||null; if(AI && typeof render==="function" && (st.mode==="test"||st.mode==="cases")) render(); }).catch(()=>{}); }catch(e){}
+try{ if(window.claude && typeof window.claude.use==="function") window.claude.use("sample").then(s=>{ AI=s||null; if(AI && typeof render==="function" && (st.mode==="test"||st.mode==="cases"||(st.mode==="notes"&&st.topic))) render(); }).catch(()=>{}); }catch(e){}
 function topicText(t,max){ const d=document.createElement("div"); d.innerHTML=(t.notes||"").replace(/<img[^>]*>/g,"").replace(/<figure[\s\S]*?<\/figure>/g,""); return d.textContent.replace(/\s+/g," ").trim().slice(0,max||22000); }
 const AI_ERR = c => c==="not_granted"||c==="sampling_disabled"||c==="not_declared"||c==="capability_disabled"||c==="capability_removed" ? "Claude šiame puslapyje neleidžiamas." : c==="rate_limited" ? "Per daug užklausų – pabandyk po kelių minučių." : c==="invalid_json" ? "Claude atsakymo nepavyko perskaityti – bandyk dar kartą." : "Nepavyko – bandyk dar kartą.";
 function validQ(q){ return q && typeof q.q==="string" && Array.isArray(q.o) && q.o.length>=3 && q.o.length<=5 && q.o.every(x=>typeof x==="string") && Number.isInteger(q.c) && q.c>=0 && q.c<q.o.length; }
@@ -6573,6 +6585,192 @@ function renderProgress(v,M){
   v.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{progFilter=b.dataset.f; resetArm=false; render();});
   $("#preset").onclick=()=>{ if(resetArm){progSave(M,{}); resetArm=false;} else resetArm=true; render(); };
   v.querySelectorAll("[data-open]").forEach(a=>a.onclick=e=>{e.preventDefault(); const it=all.find(x=>x[0]===a.dataset.open); const L=it[2]; st.area=L.area; st.sub=L.sub; st.topic=L.topic; st.mode="notes"; render(); window.scrollTo(0,0);});
+}
+
+/* ---------- paaiškinimai užvedus pelę (žodynėlis + Claude) ---------- */
+const GLOSS = [
+ // EKG – laidumas
+ [/II°\s*(1\s*tipo|mobitz\s*i\b)|wenckebach/i, "II° AV blokada, 1 tipas (Wenckebach)", "PR intervalas kas kartą ilgėja, kol vienas P neperduodamas ir QRS iškrenta. Blokas dažniausiai AV mazge, prognozė gera.", "PR 120–200 ms"],
+ [/II°\s*(2\s*tipo|mobitz\s*ii)/i, "II° AV blokada, 2 tipas (Mobitz II)", "PR pastovus, bet staiga P neperduodamas ir QRS iškrenta. Blokas žemiau AV mazgo (His–Purkinje), gresia pilna blokada – indikacija nuolatiniam EŠS.", "PR 120–200 ms"],
+ [/II°\s*3\s*tipo|II°\s*2:1|aukšto laipsnio/i, "Aukšto laipsnio / 2:1 AV blokada", "Perduodamas tik kas antras ar retesnis P. 2:1 atveju neįmanoma atskirti 1 ir 2 tipo – vertinama kaip potencialiai pavojinga.", "Kiekvieną P seka QRS"],
+ [/III°|pilna av blokada|p ir qrs nesusiję|av disociacija/i, "III° (pilna) AV blokada", "Joks P neperduodamas į skilvelius – P ir QRS nesusiję (AV disociacija), pakaitinis ritmas retas. Indikacija EŠS.", "Kiekvieną P seka QRS, PR 120–200 ms"],
+ [/I°\s*(avb|av)|^I°$|PR\s*>\s*200/i, "I° AV blokada", "Visi P perduodami, bet PR intervalas pailgėjęs. Dažniausiai gydymo nereikia.", "PR 120–200 ms"],
+ [/frederik/i, "Frederiko fenomenas", "Pilna (III°) AV blokada esant prieširdžių virpėjimui: nėra P, matomos f bangos, bet ritmas retas ir REGULIARUS (pakaitinis).", "PV metu RR nereguliarūs"],
+ [/delta bang|wpw|preeksitac/i, "Delta banga (WPW)", "Lėtas QRS pakilimas dėl skilvelių preeksitacijos per papildomą laidų pluoštą. WPW: trumpas PR, delta banga, platus QRS.", "PR ≥ 120 ms, QRS < 120 ms"],
+ [/kairės.*kojytės|hpk|his pluošto/i, "His pluošto kojytės blokada", "Sutrikęs laidumas viena iš kojyčių – skilvelis aktyvuojamas pavėluotai, QRS platėja.", "QRS < 120 ms"],
+ // EKG – intervalai
+ [/\bQTc?\b|torsades|qt prailg/i, "QT intervalas / Torsades de pointes", "Pailgėjęs QT didina polimorfinės SV tachikardijos (Torsades de pointes) riziką. Gydymas – MgSO₄ 2 g i/v, koreguoti K⁺, nutraukti QT ilginančius vaistus.", "QTc: vyrams < 450 ms, moterims < 460 ms; > 500 ms – didelė rizika"],
+ [/^ST$|st segment|st (nusileid|depres)/i, "ST segmentas", "Normaliai izoelektrinis. Pakilimas – transmuralinė išemija (STEMI), perikarditas; nusileidimas – subendokardinė išemija, digoksinas, KS hipertrofija.", "Izoelektrinis (± 0,5 mm)"],
+ [/\bQRS\b/i, "QRS kompleksas", "Skilvelių depoliarizacija. Platus QRS (≥ 120 ms) – kojytės blokada, skilvelinė kilmė ar preeksitacija.", "80–110 ms (< 120 ms)"],
+ [/\bPR\b/i, "PR intervalas", "Nuo prieširdžių depoliarizacijos pradžios iki skilvelių – atspindi AV laidumą.", "120–200 ms"],
+ [/\bST\b.*(pakil|elev)|stemi/i, "ST pakilimas (STEMI)", "Naujas ST pakilimas J taške ≥ 2 gretimose derivacijose – ūminė okliuzija, skubi reperfuzija.", "V2–V3: < 2 mm vyrams ≥ 40 m., < 2,5 mm < 40 m., < 1,5 mm moterims; kitose < 1 mm"],
+ [/^priekinė( sienelė)?$|v1\s*[–-]\s*v4/i, "Priekinė sienelė (V1–V4)", "Pakitimai V1–V4 rodo priekinės sienelės išemiją – dažniausiai kairioji priekinė nusileidžiančioji (LAD) arterija.", ""],
+ [/^apatinė( sienelė)?$|ii,\s*iii,\s*avf/i, "Apatinė sienelė (II, III, aVF)", "Pakitimai II, III, aVF rodo apatinės sienelės išemiją – dažniausiai dešinioji vainikinė arterija (RCA). Patikrinti V4R (DS infarktas).", ""],
+ [/^šoninė( sienelė)?$|i,\s*avl,\s*v5/i, "Šoninė sienelė (I, aVL, V5–V6)", "Pakitimai I, aVL, V5–V6 rodo šoninės sienelės išemiją – dažniausiai cirkumfleksinė (LCx) arterija.", ""],
+ // Ritmo sutrikimai
+ [/prieširdžių virp/i, "Prieširdžių virpėjimas (PV)", "Chaotiškas prieširdžių aktyvumas: nėra P bangų, f bangos, RR intervalai visiškai nereguliarūs. Vertinti CHA₂DS₂-VA dėl antikoaguliacijos.", "Sinusinis ritmas 60–100 k./min."],
+ [/paroksizmin/i, "Paroksizminis PV", "Praeina savaime arba nutraukiamas per ≤ 7 dienas.", ""],
+ [/ilgalaik.*persist/i, "Ilgalaikis persistuojantis PV", "Trunka > 12 mėn., kai dar siekiama ritmo kontrolės.", ""],
+ [/persistent/i, "Persistuojantis PV", "Trunka > 7 dienas – nutraukiamas tik kardioversija.", ""],
+ [/permanent/i, "Permanentinis PV", "Gydytojas ir pacientas nusprendė nebesiekti sinusinio ritmo – taikoma tik dažnio kontrolė.", ""],
+ [/prieširdžių plazdėjim/i, "Prieširdžių plazdėjimas", "Makro re-entry dešiniajame prieširdyje: „pjūklo dantų“ F bangos II, III, aVF. Dažnai 2:1 laidumas → ŠSD ≈ 150 k./min.", "F bangos ≈ 300/min"],
+ [/avmrt/i, "AVMRT", "AV mazgo re-entry tachikardija – dažniausia reguliari siaurų QRS SVT. P paslėptas QRS arba RP < 70 ms. Vagaliniai mėginiai, adenozinas.", "Sinusinis ritmas 60–100 k./min."],
+ [/avrt/i, "AVRT", "Re-entry per papildomą laidų pluoštą. Ortodrominė – į skilvelius per AV mazgą (siauras QRS), antidrominė – per papildomą pluoštą (platus QRS).", "RP > 70 ms"],
+ [/re-?entry/i, "Re-entry", "Impulsas cirkuliuoja uždaru ratu per du skirtingo laidumo kelius – dažniausias tachiaritmijų mechanizmas.", ""],
+ [/skilvelių virp/i, "Skilvelių virpėjimas", "Chaotiškas skilvelių elektrinis aktyvumas, nėra pulso – širdies sustojimas. Nedelsiant defibriliacija.", ""],
+ [/skilvelių plazd/i, "Skilvelių plazdėjimas", "Labai greita (≈ 250–300/min) sinusoidės formos skilvelinė tachikardija, greitai pereina į virpėjimą.", ""],
+ [/skilvelinė tachik/i, "Skilvelinė tachikardija", "≥ 3 iš eilės platūs (≥ 120 ms) QRS > 100/min. Požymiai: VA disociacija, susiliejimo ir pagauti kompleksai.", "QRS < 120 ms"],
+ [/va disociac/i, "VA disociacija", "Prieširdžiai ir skilveliai plaka nepriklausomai – patikimas skilvelinės tachikardijos požymis.", ""],
+ [/skilvelinės es|ekstrasistol/i, "Ekstrasistolės", "Priešlaikiniai susitraukimai. Skilvelinės – platus QRS be prieš jį esančio P, dažnai su kompensacine pauze.", ""],
+ [/sinusinė bradikard/i, "Sinusinė bradikardija", "Sinusinis ritmas, bet ŠSD < 60 k./min. Gydoma tik esant simptomams (atropinas, EŠS).", "ŠSD 60–100 k./min."],
+ [/sinusinė tachikard/i, "Sinusinė tachikardija", "Sinusinis ritmas > 100 k./min. – dažniausiai atsakas į priežastį (karštis, anemija, hipovolemija).", "ŠSD 60–100 k./min."],
+ [/prieširdinė tachik/i, "Prieširdinė tachikardija", "Ektopinis prieširdžių židinys: P kitos morfologijos nei sinusinis, dažnis 100–250/min.", ""],
+ [/^ŠSD$|širdies susitraukimų dažn/i, "ŠSD – širdies susitraukimų dažnis", "Ramybės dažnis suaugusiajam.", "60–100 k./min."],
+ [/^ŠMRT$|staigi.*mirt/i, "Staigi širdinė mirtis", "Netikėta mirtis dėl širdies priežasties per ≤ 1 val. nuo simptomų pradžios; dažniausiai dėl skilvelių aritmijų.", ""],
+ // Gydymas / vaistai
+ [/adenozin/i, "Adenozinas", "Trumpam blokuoja AV mazgą – nutraukia AVMRT/AVRT, atskleidžia plazdėjimą. Greita i/v boliusas su praplovimu.", "6 mg → 12 mg → (12 mg)"],
+ [/atropin/i, "Atropinas", "M-cholinoblokatorius – simptominei bradikardijai.", "0,5 mg i/v kas 3–5 min., iki 3 mg"],
+ [/amiodaron/i, "Amiodaronas", "III klasės antiaritminis. Reanimacijoje po 3-io šoko 300 mg i/v, po 5-o – 150 mg. Šalutiniai: skydliaukė, plaučių fibrozė, kepenys, QT ilgėjimas.", ""],
+ [/mgso|magnio sulfat/i, "Magnio sulfatas", "Torsades de pointes pirmo pasirinkimo gydymas.", "2 g i/v"],
+ [/sinchronizuota|kardioversij|^EIT$/i, "Elektrinė kardioversija", "Sinchronizuotas su R banga šokas – nestabiliai tachiaritmijai su pulsu. Be pulso – defibriliacija (nesinchronizuota).", ""],
+ [/^nestabil/i, "Hemodinaminis nestabilumas", "Šokas, sinkopė, miokardo išemija (krūtinės skausmas) ar ūminis ŠN – indikacija skubiai kardioversijai/EŠS.", "Sist. AKS ≥ 90 mmHg"],
+ [/\bBAB\b|beta.?adrenobl/i, "BAB – beta adrenoblokatoriai", "Lėtina ŠSD ir AV laidumą, mažina deguonies poreikį. Pvz. metoprololis, bisoprololis.", ""],
+ [/digoksin/i, "Digoksinas", "Lėtina AV laidumą (dažnio kontrolė PV). Siaura terapinė riba; toksiškumą skatina hipokalemija.", "Koncentracija 0,5–0,9 ng/ml"],
+ [/statin/i, "Statinai", "HMG-KoA reduktazės inhibitoriai – mažina MTL cholesterolį.", "MTL tikslas: labai didelė rizika < 1,4 mmol/l ir ↓ ≥ 50 %; didelė < 1,8 mmol/l"],
+ [/^EŠS|laikina eš|stimuliat/i, "Elektrinis širdies stimuliatorius (EŠS)", "Kodas: 1 raidė – stimuliuojama kamera, 2 – jutimo kamera, 3 – atsakas, R – dažnio adaptacija (A – prieširdis, V – skilvelis, D – abu).", ""],
+ [/^AAI/i, "AAI režimas", "Stimuliuoja ir jaučia prieširdį – kai sutrikusi tik sinusinio mazgo funkcija, AV laidumas sveikas.", ""],
+ [/^VVI/i, "VVI(R) režimas", "Stimuliuoja ir jaučia skilvelį – dažniausiai esant permanentiniam PV su bradikardija.", ""],
+ [/^DDD/i, "DDD(R) režimas", "Stimuliuoja ir jaučia abu (prieširdį ir skilvelį) – išlaiko AV sinchroniją; AV blokadų atveju.", ""],
+ [/crt-?d|^crt\b|resinchron/i, "CRT – resinchronizacinė terapija", "Biventrikulinė stimuliacija ŠN su plačiu QRS (KKHPK blokada). CRT-D – kartu su defibriliatoriumi.", "Indikacija: KS IF ≤ 35 %, QRS ≥ 130–150 ms"],
+ [/^IKD|implantuojam.*defibril/i, "IKD – implantuojamas kardioverteris defibriliatorius", "Nutraukia gyvybei pavojingas skilvelines aritmijas. Pirminė prevencija – ŠN su KS IF ≤ 35 %, antrinė – po išgyvento SV/SVT.", ""],
+ [/antrinė prevenc/i, "Antrinė prevencija", "Priemonės pacientui, kuriam liga/įvykis jau buvo – siekiant išvengti pasikartojimo.", ""],
+ // Širdies nepakankamumas, rodikliai
+ [/\bIF\b|išstūmimo frakc/i, "KS išstūmimo frakcija (IF)", "Kokia KS kraujo dalis išstumiama per sistolę. ŠN su sumažinta IF ≤ 40 %, nežymiai sumažinta 41–49 %, išlikusi ≥ 50 %.", "≥ 50 %"],
+ [/^ŠN$|širdies nepakankam/i, "Širdies nepakankamumas (ŠN)", "Klinikinis sindromas (dusulys, nuovargis, edemos) dėl struktūrinio ar funkcinio širdies sutrikimo. Skirstomas pagal KS IF.", "KS IF ≥ 50 %; NT-proBNP < 125 pg/ml"],
+ [/bnp|natriuretin/i, "NT-proBNP / BNP", "Natriuretiniai peptidai – išsiskiria tempiant skilvelius. Žema reikšmė leidžia atmesti ŠN.", "Lėtinis: NT-proBNP < 125 pg/ml (BNP < 35); ūminis: NT-proBNP < 300 pg/ml (BNP < 100)"],
+ [/nyha/i, "NYHA klasės", "I – fizinis krūvis neribojamas; II – nedidelis ribojimas; III – ryškus ribojimas, simptomai esant mažam krūviui; IV – simptomai ramybėje.", ""],
+ [/killip/i, "Killip klasės (ŪMI)", "I – nėra ŠN; II – karkalai, S3; III – plaučių edema; IV – kardiogeninis šokas.", ""],
+ [/troponin/i, "Troponinas", "Miokardo pažaidos žymuo. MI – kylanti ir/ar krintanti dinamika, bent viena reikšmė > 99-ojo procentilio.", "< 99-ojo procentilio viršutinės ribos"],
+ [/miokardo infarkt|^ŪMI$|^MI$/i, "Miokardo infarktas", "Miokardo pažaida (troponino dinamika > 99 procentilio) + išemijos požymiai (simptomai, EKG, vaizdiniai tyrimai, trombas angiografijoje).", ""],
+ [/grace/i, "GRACE skalė", "Ūminio koronarinio sindromo mirties rizikos vertinimas. > 140 balų – didelė rizika, invazinė strategija per 24 val.", ""],
+ [/va spazm|vazospazm|prinzmetal/i, "Vainikinių arterijų spazmas", "Laikinas VA susiaurėjimas – krūtinės skausmas ramybėje (dažnai naktį) su laikinu ST pakilimu. Gydymas – KKB, nitratai.", ""],
+ [/^AKS$|arterinis kraujo spaud|^AH$|arterinė hipertenz/i, "Arterinis kraujospūdis", "AH diagnozuojama, kai kabinete ≥ 140/90 mmHg (pakartotinai) arba namuose ≥ 135/85, ABPM 24 h ≥ 130/80.", "Optimalus < 120/80 mmHg; normalus 120–129/80–84"],
+ [/cha2ds2|cha₂ds₂/i, "CHA₂DS₂-VA(Sc)", "Insulto rizika esant PV: ŠN, AH, amžius ≥ 75 (2), DM, insultas/TIA (2), kraujagyslių liga, 65–74 m.", "Antikoaguliacija rekomenduojama ≥ 2 balai, svarstytina 1"],
+ [/has-?bled/i, "HAS-BLED", "Kraujavimo rizika vartojant antikoaguliantus. ≥ 3 – didelė rizika: koreguoti rizikos veiksnius, bet ne atsisakyti antikoaguliacijos.", ""],
+ [/\bINR\b/i, "INR", "Varfarino poveikio rodiklis.", "Gydant varfarinu dažniausiai 2–3; mechaninis vožtuvas 2,5–3,5"],
+ // Vožtuvai, perikardas, įgimtos
+ [/aortos stenoz/i, "Aortos stenozė", "Sunki AS: AVA < 1 cm², vidutinis gradientas ≥ 40 mmHg, Vmax ≥ 4 m/s. Klasikiniai simptomai – krūtinės skausmas, sinkopė, dusulys.", "AVA 3–4 cm²"],
+ [/mitralinė stenoz/i, "Mitralinė stenozė", "Dažniausiai po reumato. Sunki – MVA ≤ 1,5 cm². Diastolinis ūžesys, PV, KP padidėjimas.", "MVA 4–6 cm²"],
+ [/tamponad|beck/i, "Širdies tamponada", "Skystis perikarde slegia širdį. Becko triada: hipotenzija, išsipūtusios jungo venos, duslūs tonai; paradoksinis pulsas.", "Paradoksinis pulsas < 10 mmHg"],
+ [/konstrikc|kussmaul/i, "Konstrikcinis perikarditas", "Sustandėjęs perikardas riboja prisipildymą. Kussmaulio ženklas, perikardo „knock“, kalcifikatai.", ""],
+ [/mioperikard/i, "Mioperikarditas", "Perikarditas su miokardo įsitraukimu – padidėjęs troponinas, išlikusi KS funkcija.", ""],
+ [/eizenmenger/i, "Eizenmengerio sindromas", "Ilgalaikis kairės → dešinės šuntas sukelia plautinę hipertenziją, šuntas apsisuka į dešinė → kairė: cianozė. Šunto operacija kontraindikuotina.", ""],
+ [/endokard|duke/i, "Infekcinis endokarditas", "Duke kriterijai: 2 dideli, arba 1 didelis + 3 maži, arba 5 maži. Dideli – teigiamos hemokultūros, vegetacijos echoskopijoje.", ""],
+ [/^TEE|transezofag/i, "TEE – transezofaginė echokardiografija", "Echoskopija pro stemplę – geriau matosi prieširdžiai, KP ausytė (trombai), vožtuvų vegetacijos, aortos disekacija.", ""],
+ [/^TTE|transtorakal/i, "TTE – transtorakalinė echokardiografija", "Įprasta echoskopija per krūtinės ląstą – pirmas tyrimas vertinant struktūrą ir funkciją.", ""],
+ // Kraujagyslės
+ [/aneurizm|^AAA$/i, "Aneurizma", "Arterijos išsiplėtimas ≥ 50 % normalaus skersmens. AAA – pilvinė aorta > 3 cm. Operacija: ≥ 5,5 cm vyrams, ≥ 5,0 cm moterims, augimas ≥ 10 mm/m. arba simptomai.", "Pilvinė aorta < 3 cm"],
+ [/disekac/i, "Aortos disekacija", "Intimos plyšys, kraujas teka tarp sienelės sluoksnių. A tipas (Stanford) – kylančioji aorta → skubi operacija; B tipas – dažniau konservatyviai/TEVAR.", ""],
+ [/\bABI\b|kulkšnies.*žasto|gkri/i, "Kulkšnies–žasto indeksas", "Periferinių arterijų ligos tyrimas. < 0,9 – PAL, < 0,4 – kritinė išemija, > 1,4 – nekompresinės (kalcifikuotos) arterijos.", "1,0–1,4"],
+ [/d-?dimer/i, "D-dimeras", "Fibrino skilimo produktas – esant mažai/vidutinei klinikinei tikimybei neigiamas atmeta PATE/GVT.", "< 500 µg/l (> 50 m.: amžius × 10)"],
+ [/plautinė hipertenz/i, "Plautinė hipertenzija", "Vidutinis plaučių arterijos spaudimas > 20 mmHg ramybėje (dešiniosios širdies kateterizacija). Prekapiliarinė – PAWP ≤ 15 mmHg, PVR > 2 WU.", "Vid. PAS ≤ 20 mmHg"],
+ [/pate|plaučių embol/i, "Plaučių arterijos tromboembolija", "Trombas plaučių arterijose. Tikimybė – Wells/Ženevos skalė, patvirtinimas – KT angiografija. Didelė rizika = šokas → trombolizė.", ""],
+ // Pulmonologija
+ [/pao₂|pao2/i, "PaO₂ – deguonies dalinis slėgis arteriniame kraujyje", "PaO₂ < 60 mmHg = hipoksemija, I tipo (hipokseminis) kvėpavimo nepakankamumas.", "75–100 mmHg (≈ 10,5–13,3 kPa)"],
+ [/paco₂|paco2/i, "PaCO₂ – CO₂ dalinis slėgis arteriniame kraujyje", "PaCO₂ > 45 mmHg = hiperkapnija, II tipo (ventiliacinis) kvėpavimo nepakankamumas.", "35–45 mmHg (4,7–6,0 kPa)"],
+ [/hco₃|hco3|bikarbonat/i, "HCO₃⁻ – bikarbonatas", "Metabolinis rūgščių–šarmų komponentas. Lėtinės hiperkapnijos metu inkstai jį kaupia (kompensacija).", "22–26 mmol/l"],
+ [/^ph$|\bph\s*[<>]/i, "Kraujo pH", "< 7,35 – acidozė, > 7,45 – alkalozė. Ūminė hiperkapnija – pH krenta; lėtinė – kompensuota.", "7,35–7,45"],
+ [/spo₂|spo2|saturac/i, "SpO₂ – saturacija", "Pulsoksimetrijos rodiklis. Deguonies terapijos tikslas daugumai 94–98 %, esant hiperkapnijos rizikai (LOPL) – 88–92 %.", "≥ 95 %"],
+ [/hipoksemij/i, "Hipoksemija", "Sumažėjęs deguonies kiekis arteriniame kraujyje.", "PaO₂ 75–100 mmHg, SpO₂ ≥ 95 %"],
+ [/hiperkapnij/i, "Hiperkapnija", "Padidėjęs CO₂ kiekis kraujyje dėl hipoventiliacijos.", "PaCO₂ 35–45 mmHg"],
+ [/^šuntas$|intrapulmonin.*šunt/i, "Šuntas", "Kraujas pereina nedalyvavęs dujų apykaitoje (pvz. atelektazė, plaučių edema) – hipoksemija beveik nekoreguojama deguonimi.", ""],
+ [/i tipo.*kvėp|hipoksemin/i, "I tipo kvėpavimo nepakankamumas", "Hipokseminis: PaO₂ < 60 mmHg, PaCO₂ normalus arba sumažėjęs.", "PaO₂ 75–100 mmHg"],
+ [/ii tipo.*kvėp|ventiliacin/i, "II tipo kvėpavimo nepakankamumas", "Ventiliacinis (hiperkapninis): PaCO₂ > 45 mmHg, dažnai ir hipoksemija.", "PaCO₂ 35–45 mmHg"],
+ [/fev₁|fev1|fvc|tiffeneau/i, "Spirometrija: FEV₁ ir FVC", "Obstrukcija – FEV₁/FVC < 0,7 po bronchodilatatoriaus. LOPL sunkumas pagal FEV₁: GOLD 1 ≥ 80 %, 2 50–79 %, 3 30–49 %, 4 < 30 %.", "FEV₁/FVC ≥ 0,7; FEV₁ ≥ 80 % numatomo"],
+ [/dlco/i, "DLCO – difuzijos gebą", "Kaip gerai dujos pereina per alveolių–kapiliarų membraną. Mažėja esant intersticinėms ligoms, emfizemai, plautinei hipertenzijai.", "≥ 80 % numatomo"],
+ [/nosinės kaniul/i, "Nosinės kaniulės", "Mažo srauto deguonis – lengvai hipoksemijai.", "1–6 l/min → FiO₂ ≈ 24–44 %"],
+ [/venturi/i, "Venturi kaukė", "Tiksli, fiksuota FiO₂ – tinka LOPL / hiperkapnijos rizikai.", "FiO₂ 24–60 % (pagal spalvą)"],
+ [/rezervuar|nereversin/i, "Kaukė su rezervuaru", "Didžiausia FiO₂ be aparato – sunkiai hipoksemijai, šokui, traumoms.", "10–15 l/min → FiO₂ ≈ 60–90 %"],
+ [/paprasta.*kauk|veido kauk/i, "Paprasta veido kaukė", "Vidutinė FiO₂. Srautas ≥ 5 l/min, kad nebūtų iškvepiamo CO₂ pakartotinio įkvėpimo.", "5–10 l/min → FiO₂ ≈ 35–60 %"],
+ [/hfnc|didelio srauto/i, "Didelio srauto nosinės kaniulės (HFNC)", "Pašildytas, sudrėkintas deguonis dideliu srautu – sukuria nedidelį PEEP, mažina kvėpavimo darbą.", "Iki 60 l/min, FiO₂ iki 100 %"],
+ [/\bNIV\b|neinvazinė ventil/i, "NIV – neinvazinė ventiliacija", "Ventiliacija per kaukę (BiPAP/CPAP). Pagrindinė indikacija – LOPL paūmėjimas su respiracine acidoze (pH < 7,35, PaCO₂ > 45).", ""],
+ [/intubac/i, "Intubacija", "Indikacijos: kvėpavimo takų apsauga (GKS ≤ 8), nepavykusi NIV, kvėpavimo sustojimas, sunki hipoksemija ar acidozė.", ""],
+ [/pleuros (skyst|efuz)|skystis pleuro|light/i, "Skystis pleuros ertmėje", "Eksudatas pagal Light kriterijus, jei bent vienas: baltymai pleuroje/serume > 0,5; LDH pleuroje/serume > 0,6; LDH pleuroje > 2/3 viršutinės serumo normos.", "Pleuros ertmėje ≈ 10–20 ml"],
+ [/pneumotoraks/i, "Pneumotoraksas", "Oras pleuros ertmėje. Įtampos – obstrukcinis šokas, skubi dekompresija.", ""],
+ [/būgno lazdel|hipokrat/i, "Būgno lazdelių pirštai", "Distalinių falangų sustorėjimas – plaučių vėžys, bronchektazės, IPF, cianoziniai įgimti defektai.", ""],
+ [/mediastinoskop/i, "Mediastinoskopija", "Tarpuplaučio limfmazgių apžiūra ir biopsija per pjūvį virš krūtinkaulio – plaučių vėžio N stadijavimui.", ""],
+ [/\bMRT\b|magnetinio rezonan/i, "MRT – magnetinio rezonanso tomografija", "Vaizdinimas be jonizuojančios spinduliuotės – geras minkštųjų audinių, miokardo (randas, uždegimas) vertinimas.", ""],
+ [/\bKT\b|kompiuterin/i, "KT – kompiuterinė tomografija", "Rentgeno sluoksninis vaizdinimas; su kontrastu (KT angiografija) – PATE, aortos ligoms.", ""],
+ [/hemoptiz|kraujavimas iš plauč/i, "Hemoptizė", "Kraujo atkosėjimas. Masyvi – > 200–600 ml per parą arba sukelianti kvėpavimo/hemodinamikos sutrikimą.", ""],
+ // Elektrolitai
+ [/kalio|hipokalem|hiperkalem|^K⁺/i, "Kalis (K⁺)", "Hipo- ir hiperkalemija sukelia aritmijas; hiperkalemija – smailios T bangos, platus QRS.", "3,5–5,0 mmol/l"],
+ [/^natris|natrio|hiponatrem/i, "Natris (Na⁺)", "Hiponatremija ŠN atveju – bloga prognozė.", "135–145 mmol/l"],
+ [/^GFG$|glomerul/i, "GFG – glomerulų filtracijos greitis", "Inkstų funkcijos rodiklis, svarbus vaistų dozavimui.", "≥ 90 ml/min/1,73 m²"],
+];
+const GL_SKIP = /^((taip|ne|paprastai( ne)?|dažniausiai|retai|ne visada)(\s*[–—-].*|\s*\(.*)?|apibrėžimas|geltonai|kaip skaityti|svarbu( egzaminui)?|egzaminui|egzamino akcentas|spąstai|diagnozės formulavimas|kaip įsiminti|atsimink|atmintinė|norma|kiti|kitos|simptomai|diagnostika|vadovėlis|tikslas|pagrindinis principas|ne|taip|padidėjęs|sumažėjęs|chirurginis|stebėsena|programos reikalavimai.*|apie šias skaidres|„testai“|\d+ dalis|[ivx]+|[a-z]|\d+|[↑↓→]|.{0,1})$/i;
+function glFind(txt){ for(const g of GLOSS){ if(g[0].test(txt)) return {t:g[1],d:g[2],n:g[3]}; } return null; }
+let glTip=null, glCur=null, glTimer=null, glTopic=null;
+function glEnsureTip(){
+  if(glTip) return glTip;
+  glTip=document.createElement("div"); glTip.className="gl-tip"; glTip.setAttribute("role","tooltip"); glTip.id="gl-tip"; glTip.hidden=true;
+  document.body.appendChild(glTip);
+  glTip.addEventListener("mouseenter",()=>clearTimeout(glTimer));
+  glTip.addEventListener("mouseleave",()=>glHideSoon());
+  return glTip;
+}
+function glPlace(el){
+  const tip=glEnsureTip(), r=el.getBoundingClientRect(), W=Math.min(320,innerWidth-24);
+  tip.style.width=W+"px";
+  let x=Math.min(Math.max(12,r.left+r.width/2-W/2),innerWidth-W-12);
+  tip.style.left=x+"px";
+  const h=tip.offsetHeight||120;
+  const below=r.bottom+10+h<innerHeight-90;
+  tip.style.top=(below? r.bottom+8 : Math.max(8,r.top-h-8))+"px";
+}
+function glRender(el,info,loading){
+  const tip=glEnsureTip();
+  tip.innerHTML = loading
+    ? `<b class="gl-t">${esc(el.textContent.trim())}</b><p class="gl-d gl-load">Claude ieško paaiškinimo…</p>`
+    : `<b class="gl-t">${esc(info.t)}</b>${info.d?`<p class="gl-d">${esc(info.d)}</p>`:""}${info.n?`<div class="gl-n"><span>Norma</span>${esc(info.n)}</div>`:""}${info.ai?`<small class="gl-src">Paaiškino Claude – pasitikrink konspekte</small>`:""}`;
+  tip.hidden=false; glPlace(el);
+}
+function glShow(el){
+  glCur=el; el.setAttribute("aria-describedby","gl-tip");
+  const txt=el.textContent.trim();
+  const info=glFind(txt) || store.get("gl:"+txt.toLowerCase(),null);
+  if(info){ glRender(el,info); return; }
+  if(!AI){ return; }
+  glRender(el,null,true);
+  const ctx=(el.closest("p,li,td,div")||el).textContent.replace(/\s+/g," ").trim().slice(0,700);
+  const prompt=`Tu padedi 4 kurso medicinos studentei (LSMU) mokytis temos „${glTopic||""}“. Konspekte paryškinta: „${txt}“. Sakinys, kuriame tai parašyta: „${ctx}“.
+Paaiškink šį terminą ar skaičių lietuviškai, trumpai ir tiksliai pagal ESC/ERS gaires. Jei tai rodiklis, intervalas, klasifikacija ar kriterijus – nurodyk normą ar ribas; jei norma netaikoma (pvz. vaistas, procedūra), „norm“ palik tuščią arba nurodyk dozę/kriterijų.
+Grąžink tik JSON: {"title":"trumpas pavadinimas","explain":"1–2 sakiniai","norm":"norma arba tuščia eilutė"}`;
+  AI.json(prompt,{modelTier:"quick",effort:"low"}).then(r=>{
+    const info={t:String(r.title||txt).slice(0,90), d:String(r.explain||"").slice(0,400), n:String(r.norm||"").slice(0,200), ai:1};
+    store.set("gl:"+txt.toLowerCase(),info);
+    if(glCur===el) glRender(el,info);
+  }).catch(e=>{ if(glCur===el){ glRender(el,{t:txt,d:AI_ERR(e&&e.code),n:""}); } });
+}
+function glHideSoon(){ clearTimeout(glTimer); glTimer=setTimeout(()=>{ if(glTip) glTip.hidden=true; if(glCur) glCur.removeAttribute("aria-describedby"); glCur=null; },180); }
+function glossify(root,t){
+  glTopic=t&&t.title;
+  root.querySelectorAll(".notes b, .notes strong, .notes mark").forEach(el=>{
+    if(el.closest("h1,h2,h3,h4,th,figcaption,.gl")) return;
+    if(el.matches(".call > strong:first-child")) return;
+    const txt=el.textContent.trim();
+    if(txt.length>60 || GL_SKIP.test(txt)) return;
+    const hit=glFind(txt);
+    if(!hit && !AI && !store.get("gl:"+txt.toLowerCase(),null)) return;
+    el.classList.add("gl"); if(hit) el.classList.add("gl-k"); el.tabIndex=0;
+  });
+  if(root.dataset.glBound) return; root.dataset.glBound="1";
+  root.addEventListener("mouseover",e=>{ const el=e.target.closest(".gl"); if(!el) return; clearTimeout(glTimer); if(glCur===el) return; glTimer=setTimeout(()=>glShow(el), el.classList.contains("gl-k")?120:450); });
+  root.addEventListener("mouseout",e=>{ const el=e.target.closest(".gl"); if(!el || (e.relatedTarget&&el.contains(e.relatedTarget))) return; glHideSoon(); });
+  root.addEventListener("focusin",e=>{ const el=e.target.closest(".gl"); if(el){ clearTimeout(glTimer); glShow(el);} });
+  root.addEventListener("focusout",e=>{ if(e.target.closest(".gl")) glHideSoon(); });
+  root.addEventListener("click",e=>{ const el=e.target.closest(".gl"); if(!el) return; clearTimeout(glTimer); if(glCur===el && glTip && !glTip.hidden){ glHideSoon(); } else glShow(el); });
+  addEventListener("scroll",()=>{ if(glCur&&glTip&&!glTip.hidden) glPlace(glCur); },{passive:true});
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape") glHideSoon(); });
 }
 
 /* ---------- modulių pasirinkimas ---------- */
