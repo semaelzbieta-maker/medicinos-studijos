@@ -6272,16 +6272,21 @@ function renderTest(pane,t){
 .ai-form{display:flex;gap:8px;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
 .ai-form textarea{flex:1;resize:none;height:44px;max-height:120px;font:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:12px;padding:10px;background:var(--bg);color:var(--ink)}
 .ai-form button{border:0;border-radius:12px;padding:0 14px;background:var(--scrub);color:#fff;font:inherit;font-weight:700;cursor:pointer}
-.ai-note{font-size:12px;color:var(--muted);padding:0 14px 6px}`;
+.ai-note{font-size:12px;color:var(--muted);padding:0 14px 6px}
+.ai-att{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 6px}
+.ai-att span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;background:var(--scrub-soft);border-radius:999px;padding:4px 6px 4px 10px}
+.ai-att span button{border:0;background:transparent;color:var(--muted);cursor:pointer;font:inherit;padding:0 4px}
+.ai-form .ai-clip{background:var(--bg);color:var(--ink);border:1.5px solid var(--line);padding:0 12px;font-size:18px}`;
   const s=document.createElement("style"); s.textContent=css; document.head.appendChild(s);
   const fab=document.createElement("button"); fab.className="ai-fab"; fab.type="button"; fab.textContent="💬 Klausk Claude"; fab.setAttribute("aria-label","Atidaryti pokalbį su Claude");
   const panel=document.createElement("div"); panel.className="ai-panel"; panel.setAttribute("role","dialog"); panel.setAttribute("aria-label","Pokalbis su Claude");
   panel.innerHTML=`<div class="ai-top"><b>💬 Klausk Claude</b><button type="button" data-ai="new">Naujas pokalbis</button><button type="button" data-ai="close" aria-label="Uždaryti">✕</button></div>
   <div class="ai-ctx"></div><div class="ai-log" aria-live="polite"></div>
-  <div class="ai-chips"></div><div class="ai-note"></div>
-  <form class="ai-form"><textarea placeholder="Paklausk, kas neaišku…" aria-label="Klausimas Claude"></textarea><button type="submit">Siųsti</button></form>`;
+  <div class="ai-chips"></div><div class="ai-att"></div><div class="ai-note"></div>
+  <form class="ai-form"><input type="file" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" multiple hidden><button type="button" class="ai-clip" title="Pridėti nuotrauką ar PDF" aria-label="Pridėti nuotrauką ar PDF">📎</button><textarea placeholder="Paklausk arba pridėk 📎 nuotrauką / PDF…" aria-label="Klausimas Claude"></textarea><button type="submit">Siųsti</button></form>`;
   document.body.appendChild(fab); document.body.appendChild(panel);
-  const log=panel.querySelector(".ai-log"), ctxEl=panel.querySelector(".ai-ctx"), chips=panel.querySelector(".ai-chips"), note=panel.querySelector(".ai-note"), ta=panel.querySelector("textarea"), sendBtn=panel.querySelector(".ai-form button");
+  const log=panel.querySelector(".ai-log"), ctxEl=panel.querySelector(".ai-ctx"), chips=panel.querySelector(".ai-chips"), note=panel.querySelector(".ai-note"), ta=panel.querySelector("textarea"), sendBtn=panel.querySelector('.ai-form button[type="submit"]'), attEl=panel.querySelector(".ai-att"), fileIn=panel.querySelector('.ai-form input[type="file"]'), clip=panel.querySelector(".ai-clip");
+  let att={images:[],text:"",names:[]}, lim=null, prepping=false;
   let turns=[], ctl=null, busy=false;
   function md(t){
     const e=esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
@@ -6306,7 +6311,7 @@ function renderTest(pane,t){
     chips.querySelectorAll("button").forEach(b=>b.onclick=()=>{ ta.value=b.textContent; send(); });
   }
   function drawLog(){
-    log.innerHTML=turns.length?turns.map(m=>`<div class="ai-msg ${m.role==="user"?"u":"a"}">${m.role==="user"?esc(m.content):md(m.content)}</div>`).join(""):`<div class="ai-msg a"><p>Labas! Klausk, kas neaišku – atsakysiu remdamasis atidaryta tema. Galiu paaiškinti, sukurti klausimų ar atmintinių.</p></div>`;
+    log.innerHTML=turns.length?turns.map(m=>`<div class="ai-msg ${m.role==="user"?"u":"a"}">${m.role==="user"?esc(m.show||m.content):md(m.content)}</div>`).join(""):`<div class="ai-msg a"><p>Labas! Klausk, kas neaišku – atsakysiu remdamasis atidaryta tema. Galiu paaiškinti, sukurti klausimų ar atmintinių.</p></div>`;
     log.scrollTop=log.scrollHeight;
   }
   function openPanel(){ const c=ctxText(); ctxEl.textContent=c.label; drawChips(); drawLog(); panel.classList.add("open"); fab.style.display="none"; setTimeout(()=>ta.focus(),50); }
@@ -6316,17 +6321,57 @@ function renderTest(pane,t){
   panel.querySelector('[data-ai="new"]').onclick=()=>{ if(ctl) ctl.abort(); turns=[]; note.textContent=""; drawLog(); };
   ta.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); send(); } });
   panel.querySelector("form").onsubmit=e=>{ e.preventDefault(); if(busy){ if(ctl) ctl.abort(); } else send(); };
+
+  async function limits(){ if(lim!==null) return lim; try{ lim=AI&&AI.limits? await AI.limits():{}; }catch(e){ lim={}; } return lim; }
+  function drawAtt(){ attEl.innerHTML=att.names.map((n,i)=>`<span>📎 ${esc(n)}<button type="button" data-rm="${i}" aria-label="Pašalinti">✕</button></span>`).join(""); attEl.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{ att={images:[],text:"",names:[]}; drawAtt(); }); }
+  let pdfLib=null;
+  async function loadPdf(){ if(pdfLib) return pdfLib; const v="4.10.38"; pdfLib=await import(`https://cdn.jsdelivr.net/npm/pdfjs-dist@${v}/build/pdf.min.mjs`); pdfLib.GlobalWorkerOptions.workerSrc=`https://cdn.jsdelivr.net/npm/pdfjs-dist@${v}/build/pdf.worker.min.mjs`; return pdfLib; }
+  async function pdfToParts(file,maxImg){
+    const lib=await loadPdf(); const doc=await lib.getDocument({data:await file.arrayBuffer()}).promise;
+    let text=""; const imgs=[];
+    for(let p=1;p<=doc.numPages;p++){
+      const page=await doc.getPage(p);
+      try{ const tc=await page.getTextContent(); text+=`\n[${p} psl.] `+tc.items.map(x=>x.str).join(" "); }catch(e){}
+      if(imgs.length<maxImg){ const vp=page.getViewport({scale:1.3}); const cv=document.createElement("canvas"); cv.width=Math.ceil(vp.width); cv.height=Math.ceil(vp.height);
+        await page.render({canvasContext:cv.getContext("2d"),canvas:cv,viewport:vp}).promise; imgs.push(await new Promise(r=>cv.toBlob(r,"image/jpeg",0.8))); }
+    }
+    return {text:text.replace(/\s+\n/g,"\n").slice(0,60000), imgs:imgs.filter(Boolean), pages:doc.numPages};
+  }
+  clip.onclick=()=>fileIn.click();
+  fileIn.onchange=async()=>{
+    const files=[...fileIn.files]; fileIn.value=""; if(!files.length) return;
+    prepping=true; note.textContent="Ruošiami failai…";
+    const L=await limits(); const max=L&&L.images?L.images.maxCount:0;
+    let warn="";
+    for(const f of files){
+      try{
+        if(f.type==="application/pdf"){
+          const r=await pdfToParts(f,Math.max(0,max-att.images.length));
+          att.text+=`\n\n=== Failas „${f.name}“ (${r.pages} psl.) ===\n${r.text}`; att.images.push(...r.imgs); att.names.push(`${f.name} (${r.pages} psl.)`);
+        } else if(f.type.startsWith("image/")){
+          if(!max){ warn="Nuotraukų šiame lange siųsti negalima."; continue; }
+          if(att.images.length>=max){ warn=`Vienu kartu galima siųsti iki ${max} vaizdų.`; continue; }
+          att.images.push(f); att.names.push(f.name);
+        } else warn="Galima pridėti tik nuotraukas (JPG, PNG) ir PDF.";
+      }catch(e){ warn=`Nepavyko perskaityti „${f.name}“ – pabandyk įkelti skaidrių nuotraukas ar ekrano kopijas.`; }
+    }
+    note.textContent=warn;
+    prepping=false; drawAtt();
+  };
   async function send(){
-    const q=ta.value.trim(); if(!q||busy||!AI) return;
-    ta.value=""; turns.push({role:"user",content:q});
+    let q=ta.value.trim(); if(prepping){ note.textContent="Palauk, kol paruošiami failai…"; return; }
+    if(!q&&att.names.length) q="Paaiškink, kas pateikta šiuose failuose, ir išskirk svarbiausius dalykus egzaminui.";
+    if(!q||busy||!AI) return;
+    const sendAtt=att; att={images:[],text:"",names:[]}; drawAtt();
+    ta.value=""; turns.push({role:"user",content:q+(sendAtt.text?"\n\nPRIDĖTŲ FAILŲ TEKSTAS:"+sendAtt.text:""),show:(sendAtt.names.length?"📎 "+sendAtt.names.join(", ")+"\n":"")+q});
     const ans={role:"assistant",content:""}; turns.push(ans); drawLog();
     const bubble=log.lastElementChild; bubble.innerHTML="<p>Galvoju…</p>";
     busy=true; sendBtn.textContent="Stop"; note.textContent=""; ctl=new AbortController();
     const c=ctxText(); ctxEl.textContent=c.label;
-    const rules=`Tu esi Claude ir padedi LSMU medicinos fakulteto 4 kurso studentėms mokytis modulio „Širdies, krūtinės ir periferinių kraujagyslių ligos“ (kardiologija, chirurgija, pulmonologija). Atsakyk lietuviškai, aiškiai ir glaustai, naudok trumpus sąrašus ir paryškink (**…**) svarbiausius dalykus. Pirmiausia remkis žemiau pateiktu konspektu; jei atsakymo konspekte nėra, atsakyk pagal šiuolaikines gaires ir trumpai pažymėk, kad to konspekte nėra. Jei studentė prašo naujo konspekto iš skaidrių, paaiškink, kad skaidres reikia įkelti į pokalbį su Claude, kuris prižiūri svetainę – čia gali padėti suprasti ir pasikartoti.\n\nKONTEKSTAS: ${c.data}`;
-    const history=turns.slice(0,-1).slice(-12);
+    const rules=`Tu esi Claude ir padedi LSMU medicinos fakulteto 4 kurso studentėms mokytis modulio „Širdies, krūtinės ir periferinių kraujagyslių ligos“ (kardiologija, chirurgija, pulmonologija). Atsakyk lietuviškai, aiškiai ir glaustai, naudok trumpus sąrašus ir paryškink (**…**) svarbiausius dalykus. Pirmiausia remkis žemiau pateiktu konspektu; jei atsakymo konspekte nėra, atsakyk pagal šiuolaikines gaires ir trumpai pažymėk, kad to konspekte nėra. Jei pridėti failai ar nuotraukos (skaidrės, užrašai, EKG, Ro), remkis jais ir aiškiai juos paaiškink. Jei studentė prašo naujo konspekto iš skaidrių, gali jį parašyti čia pokalbyje, bet paaiškink, kad į svetainę nuolat jį įkelti galima tik per pagrindinį pokalbį su Claude, kuris prižiūri svetainę.\n\nKONTEKSTAS: ${c.data}`;
+    const history=turns.slice(0,-1).slice(-12).map(m=>({role:m.role,content:m.content}));
     try{
-      const r=await AI([{role:"user",content:rules}].concat(history),{cache:false,signal:ctl.signal,onText:({text})=>{ ans.content=text; bubble.innerHTML=md(text); log.scrollTop=log.scrollHeight; }});
+      const r=await AI([{role:"user",content:rules}].concat(history),Object.assign({cache:false,signal:ctl.signal},sendAtt.images.length?{images:sendAtt.images}:{},{onText:({text})=>{ ans.content=text; bubble.innerHTML=md(text); log.scrollTop=log.scrollHeight; }}));
       ans.content=r.text; bubble.innerHTML=md(r.text);
       if(r.truncated) note.textContent="Atsakymas nukirptas – paklausk siauriau.";
     }catch(e){
