@@ -5579,15 +5579,27 @@ const TEST_ANEUR = [
 const AREAS = [
  {id:"chirurgija", name:"Chirurgija", c:"var(--scrub)", cs:"var(--scrub-soft)", blurb:"Širdies, kraujagyslių ir krūtinės chirurgija",
   subs:[
-   {id:"sirdies", name:"Širdies chirurgija", topics:[
+   {id:"c21", g:"Širdies chirurgija", name:"2.1 Širdies chirurginių operacijų principai, pooperacinė eiga, komplikacijos ir jų gydymas", topics:[]},
+   {id:"c22", g:"Širdies chirurgija", name:"2.2 Išeminės širdies ligos chirurginis gydymas", topics:[]},
+   {id:"c23", g:"Širdies chirurgija", name:"2.3 Perikardo ligos ir širdies augliai, jų chirurginis gydymas", topics:[]},
+   {id:"c24", g:"Širdies chirurgija", name:"2.4 Įgytų širdies vožtuvų ydų chirurginis gydymas", topics:[]},
+   {id:"c25", g:"Širdies chirurgija", name:"2.5 Krūtininės aortos ligos, jų chirurginis gydymas", topics:[]},
+   {id:"c26", g:"Širdies chirurgija", name:"2.6 Aortos disekacija, chirurginis gydymas", topics:[]},
+   {id:"c27", g:"Širdies chirurgija", name:"2.7 Širdies nepakankamumo chirurginis gydymas", topics:[
      {id:"sn-chir", title:"Širdies nepakankamumo gydymas (chirurginis)", src:"Paskaita 2.7 · 33 skaidrės", notes:NOTES_SNCHIR, cards:CARDS_SNCHIR, test:TEST_SNCHIR}
    ]},
-   {id:"kraujagysliu", name:"Kraujagyslių chirurgija", topics:[
+   {id:"c28", g:"Krūtinės chirurgija", name:"2.8 Įvadas į krūtinės chirurgiją. Pagrindiniai chirurginiai krūtinės patologijos diagnostikos bei gydymo metodai", topics:[]},
+   {id:"c29", g:"Krūtinės chirurgija", name:"2.9 Krūtinės traumų diagnostika, konservatyvus ir chirurginis gydymas", topics:[]},
+   {id:"c210", g:"Krūtinės chirurgija", name:"2.10 Plaučių ir pleuros ligų chirurginė diagnostika ir gydymas. Plaučių ligų chirurginis gydymas", topics:[
+     {id:"plauciai-pleura", title:"Plaučių ir pleuros ligų chirurginė diagnostika ir gydymas", src:"Paskaita 2026-01-06 · 19 skaidrių", notes:NOTES_PLAUCIAI, cards:CARDS_PLAUCIAI, test:TEST_PLAUCIAI}
+   ]},
+   {id:"c211", g:"Krūtinės chirurgija", name:"2.11 Tarpuplaučio ir diafragmos ligų chirurginė diagnostika ir gydymas", topics:[]},
+   {id:"c212", g:"Kraujagyslių chirurgija", name:"2.12 Ūmi ir lėtinė galūnių išemija", topics:[]},
+   {id:"c213", g:"Kraujagyslių chirurgija", name:"2.13 Brachiocefalinių arterijų ligos", topics:[]},
+   {id:"c214", g:"Kraujagyslių chirurgija", name:"2.14 Pilvinės aortos ir periferinių arterijų aneurizmos", topics:[
      {id:"aneurizmos", title:"Arterijų aneurizmos: diagnostika, OSR ir EVAR", src:"Paskaita „Aneurizmos ir jų gydymas“, LSMU Kraujagyslių chirurgija, 2024", notes:NOTES_ANEUR, cards:CARDS_ANEUR, test:TEST_ANEUR}
    ]},
-   {id:"krutines", name:"Krūtinės chirurgija", topics:[
-     {id:"plauciai-pleura", title:"Plaučių ir pleuros ligų chirurginė diagnostika ir gydymas", src:"Paskaita 2026-01-06 · 19 skaidrių", notes:NOTES_PLAUCIAI, cards:CARDS_PLAUCIAI, test:TEST_PLAUCIAI}
-   ]}
+   {id:"c215", g:"Kraujagyslių chirurgija", name:"2.15 Venų ligos", topics:[]}
   ]},
  {id:"kardiologija", name:"Kardiologija", c:"var(--heart)", cs:"var(--heart-soft)", blurb:"11 poskyrių · 13 temų įkelta",
   subs:[
@@ -5668,7 +5680,7 @@ const SYL = [
  {id:"k", name:"Kardiologija", c:"var(--heart)", cs:"var(--heart-soft)", items:[
   ["1.1","Įvadinė paskaita"],["1.2","Dažniausi kardiologiniai simptomai ir sindromai"],["1.3","Lėtiniai išeminiai sindromai",{area:"kardiologija",sub:"lis",topic:"lvas"}],["1.4","Ūminiai išeminiai sindromai",{area:"kardiologija",sub:"uis",topic:"uvas"}],["1.5","Arterinė hipertenzija",{area:"kardiologija",sub:"ah",topic:"ah"}],["1.6","Širdies nepakankamumas ir miokardo ligos",{area:"kardiologija",sub:"sn",topic:"sn"}],["1.7","Širdies ritmo sutrikimai",{area:"kardiologija",sub:"ritmo",topic:"ritmas"}],["1.8","Širdies laidumo sutrikimai",{area:"kardiologija",sub:"laidumo",topic:"laidumas"}],["1.9","Įgytos ir įgimtos širdies ydos"],["1.10","Uždegiminės širdies ligos",{area:"kardiologija",sub:"infekcines",topic:"ie"}],["1.10.1","Uždegiminės širdies ligos: laboratorinė medicina"],["1.11","Ūmios būklės kardiologijoje – ankstyva diagnostika ir pradinis gydymas"],["1.12","Instrumentiniai diagnostikos metodai kardiologijoje"]]},
  {id:"c", name:"Chirurgija", c:"var(--scrub)", cs:"var(--scrub-soft)", items:[
-  ["2.1","Širdies chirurginių operacijų principai, pooperacinis laikotarpis"],["2.2","Išeminės širdies ligos chirurginis gydymas"],["2.3","Perikardo ligos ir širdies augliai, jų chirurginis gydymas"],["2.4","Įgytų širdies vožtuvų ydų chirurginis gydymas"],["2.5","Krūtininės aortos ligos, jų chirurginis gydymas"],["2.6","Aortos disekacija, chirurginis gydymas"],["2.7","Širdies nepakankamumo chirurginis gydymas",{area:"chirurgija",sub:"sirdies",topic:"sn-chir"}],["2.8","Įvadas į krūtinės chirurgiją. Pagrindiniai chi…"],["2.9","Krūtinės traumų diagnostika, konservatyvus ir chirurginis gydymas"],["2.10","Plaučių ir pleuros ligų chirurginė diagnostika ir gydymas",{area:"chirurgija",sub:"krutines",topic:"plauciai-pleura"}],["2.11","Tarpuplaučio ir diafragmos ligų chirurginė diagnostika ir gydymas"],["2.12","Ūmi ir lėtinė galūnių išemija"],["2.13","Brachiocefalinių arterijų ligos"],["2.14","Pilvinės aortos ir periferinių arterijų aneurizmos"],["2.15","Venų ligos"]]},
+  ["2.1","Širdies chirurginių operacijų principai, pooperacinis laikotarpis"],["2.2","Išeminės širdies ligos chirurginis gydymas"],["2.3","Perikardo ligos ir širdies augliai, jų chirurginis gydymas"],["2.4","Įgytų širdies vožtuvų ydų chirurginis gydymas"],["2.5","Krūtininės aortos ligos, jų chirurginis gydymas"],["2.6","Aortos disekacija, chirurginis gydymas"],["2.7","Širdies nepakankamumo chirurginis gydymas",{area:"chirurgija",sub:"c27",topic:"sn-chir"}],["2.8","Įvadas į krūtinės chirurgiją. Pagrindiniai chi…"],["2.9","Krūtinės traumų diagnostika, konservatyvus ir chirurginis gydymas"],["2.10","Plaučių ir pleuros ligų chirurginė diagnostika ir gydymas",{area:"chirurgija",sub:"c210",topic:"plauciai-pleura"}],["2.11","Tarpuplaučio ir diafragmos ligų chirurginė diagnostika ir gydymas"],["2.12","Ūmi ir lėtinė galūnių išemija"],["2.13","Brachiocefalinių arterijų ligos"],["2.14","Pilvinės aortos ir periferinių arterijų aneurizmos",{area:"chirurgija",sub:"c214",topic:"aneurizmos"}],["2.15","Venų ligos"]]},
  {id:"p", name:"Pulmonologija", c:"var(--lung)", cs:"var(--lung-soft)", items:[
   ["3.1","Obstrukcinių plaučių ligų diagnostikos ir gydymo principai"],["3.2","Funkciniai tyrimai kvėpavimo organų ligoms diagnozuoti"],["3.3","Plaučių navikų diagnostikos ir gydymo principai, kraujavimas iš plaučių"],["3.4","Intersticinės plaučių ligos"],["3.5","Ūminės plaučių embolijos diagnostikos ir gydymo principai. Plautinės hipertenzijos diagnostika"],["3.6","Invaziniai tyrimai kvėpavimo organų ligoms diagnozuoti"],["3.7","Respiracinės infekcijos diagnostikos ir gydymo principai"],["3.8","Pleuros ligų diagnostikos ir gydymo principai"],["3.9","Kvėpavimo sutrikimai miegant"],["3.10","Kvėpavimo nepakankamumas"],["3.11","Plaučių ir ekstrapulmoninės tuberkuliozės gydymo principai ir profilaktika"],["3.12","Respiracinių infekcijų ir Mycobacterium tuberculosis mikrobiologinės diagnostikos galimybės"],["3.13","Racionali respiracinių infekcijų antibiotikoterapija"]]}
 ];
@@ -5830,13 +5842,15 @@ function render(){
   if(!a){
     v.innerHTML = `<p class="section-label">${esc(M.name)} · mokymosi sritis</p><div class="areas">${M.areas.map(x=>{
       const n=count(allTopics(x),st.mode);
-      const chips = x.subs ? `<div class="chips">${x.subs.map(s=>`<span class="chip">${esc(s.name)}</span>`).join("")}</div>`:"";
+      const chips = x.subs ? `<div class="chips">${(x.subs.some(s=>s.g)?[...new Set(x.subs.map(s=>s.g))]:x.subs.map(s=>s.name)).map(n=>`<span class="chip">${esc(n)}</span>`).join("")}</div>`:"";
       return `<button class="area" data-area="${x.id}" style="--c:${x.c};--cs:${x.cs}"><span class="tab"></span><span class="in"><h3>${x.name}</h3><p>${n} ${unit(st.mode)} · ${esc(x.blurb)}</p>${chips}</span><span class="go" aria-hidden="true">→</span></button>`;}).join("")}</div>`;
     v.querySelectorAll("[data-area]").forEach(b=>b.onclick=()=>{st.area=b.dataset.area;render()});
     return;
   }
   if(a.subs && !st.sub){
-    v.innerHTML = `<p class="section-label">${a.name} · poskyriai</p><div class="list">${a.subs.map(s=>`<button class="row" data-sub="${s.id}" style="--c:${a.c}"><span class="dot"></span><span class="t"><h4>${esc(s.name)}</h4><p>${s.topics.length} ${s.topics.length===1?"tema":"temų"}</p></span><span class="cnt">${count(s.topics,st.mode)} ${unit(st.mode)}</span></button>`).join("")}</div>`;
+    const subRow = s=>`<button class="row" data-sub="${s.id}" style="--c:${a.c}"><span class="dot"></span><span class="t"><h4>${esc(s.name)}</h4><p>${s.topics.length} ${s.topics.length===1?"tema":"temų"}</p></span><span class="cnt">${count(s.topics,st.mode)} ${unit(st.mode)}</span></button>`;
+    const groups=[...new Set(a.subs.map(s=>s.g||""))];
+    v.innerHTML = groups.map((g,gi)=>`<p class="section-label"${gi?' style="margin-top:20px"':""}>${g?esc(g):a.name+" · poskyriai"}</p><div class="list">${a.subs.filter(s=>(s.g||"")===g).map(subRow).join("")}</div>`).join("");
     v.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>{st.sub=b.dataset.sub;render()});
     return;
   }
