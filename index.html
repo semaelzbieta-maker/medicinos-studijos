@@ -245,6 +245,18 @@ figcaption{font-size:13px;color:var(--muted);margin-top:8px}
 .note{font-size:13px;color:var(--muted)}
 
 /* test */
+.more{margin-top:18px;padding:14px;border:1.5px dashed var(--line);border-radius:var(--radius);display:grid;gap:8px}
+.more-h{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center}
+.more .bar{display:flex;gap:8px;flex-wrap:wrap}
+.btn.go{background:var(--scrub);color:#fff;border-color:transparent}
+.btn[disabled]{opacity:.55}
+.qsrc{font-family:var(--body);font-size:11.5px;color:var(--muted);margin-left:6px;text-transform:none;letter-spacing:0}
+.case{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:16px;display:grid;gap:12px}
+.case-h h3{font-size:19px;margin-top:2px}
+.case-s{padding:12px 14px;border-radius:10px;background:var(--scrub-soft);font-size:15px;line-height:1.55;border-left:3px solid var(--scrub)}
+.step{border-top:1px solid var(--line);padding-top:12px}
+.step h4{margin:4px 0 8px}
+.case-end{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px}
 .qcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:12px}
 .qcard .qn{font-family:var(--mono);font-size:12px;color:var(--muted)}
 .qcard h4{font-family:var(--display);font-size:18px;font-weight:700;margin:6px 0 12px;line-height:1.3}
@@ -5702,8 +5714,8 @@ const store = {
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 const allTopics = a => a.subs ? a.subs.flatMap(s=>s.topics) : a.topics;
-const count = (topics, mode) => topics.reduce((n,t)=> n + (mode==="notes"||mode==="my"?1: mode==="cards"? expandCards(t.cards).length : t.test.length), 0);
-const unit = mode => mode==="notes"||mode==="my"?"konsp.":mode==="cards"?"kort.":"klaus.";
+const count = (topics, mode) => topics.reduce((n,t)=> n + (mode==="notes"||mode==="my"||mode==="cases"?1: mode==="cards"? expandCards(t.cards).length : t.test.length), 0);
+const unit = mode => mode==="notes"||mode==="my"||mode==="cases"?"konsp.":mode==="cards"?"kort.":"klaus.";
 
 function expandCards(cards){
   const out=[];
@@ -5874,10 +5886,11 @@ function render(){
   }
   v.style.setProperty("--c",a.c); v.style.setProperty("--cs",a.cs);
   v.innerHTML = `<div class="topic-head" style="--c:${a.c}"><div class="eyebrow">${a.name}${s?" · "+esc(s.name):""}</div><h2>${esc(t.title)}</h2><p>${esc(t.src)}</p></div>
-  <div class="tabs" role="tablist">${STUDY_MODES.concat([{id:"my",name:"✎ Užrašai"}]).map(m=>`<button role="tab" data-tab="${m.id}" aria-selected="${st.mode===m.id}">${m.name}</button>`).join("")}</div><div id="pane"></div>`;
+  <div class="tabs" role="tablist">${STUDY_MODES.concat([{id:"cases",name:"🩺 Situacijos"},{id:"my",name:"✎ Užrašai"}]).map(m=>`<button role="tab" data-tab="${m.id}" aria-selected="${st.mode===m.id}">${m.name}</button>`).join("")}</div><div id="pane"></div>`;
   v.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{st.mode=b.dataset.tab;render()});
   const pane=$("#pane");
   if(st.mode==="notes") pane.innerHTML=`<div class="notes">${t.notes}</div>`;
+  else if(st.mode==="cases") renderCases(pane,t);
   else if(st.mode==="my"){ pane.innerHTML=sharedBox("topic:"+t.id)+noteBox("topic:"+t.id,"Mano asmeniniai užrašai","Matai tik tu – saugoma šiame įrenginyje ir naršyklėje. Norėdama perkelti į kitą įrenginį, atsisiųsk ir įkelk ten."); bindNotes(pane); bindShared(pane); }
   else if(st.mode==="cards") renderCards(pane,t);
   else renderTest(pane,t);
@@ -5924,21 +5937,356 @@ function renderCards(pane,t){
 }
 
 /* ---------- testas ---------- */
+/* ---------- KLINIKINĖS SITUACIJOS ---------- */
+const CASES = {
+lvas:[
+ {t:"Krūtinės skausmas einant į kalną", s:"58 m. vyras, rūko, serga AH ir 2 tipo CD. Pusę metų einant ~300 m ar lipant į kalną atsiranda spaudžiantis skausmas už krūtinkaulio, plintantis į kairę ranką. Pailsėjus per 3–5 min praeina. Ramybės EKG – sinusinis ritmas, be išemijos požymių. EchoKG – KS IF 60 %, sienelių judesys normalus.", st:[
+  ["Kokio pobūdžio krūtinės skausmas?",["Tipinė krūtinės angina","Netipinė krūtinės angina","Nekardinis skausmas","Nestabili krūtinės angina"],0,"Atitinka visus 3 kriterijus: būdinga lokalizacija ir pobūdis, provokuoja krūvis, praeina pailsėjus ar nuo nitratų."],
+  ["Klinikinė VA ligos tikimybė didelė. Kuris neinvazinis tyrimas tinkamiausias diagnozei patvirtinti?",["Koronarinė KT angiografija arba funkcinis vaizdinis išemijos tyrimas","Iš karto invazinė koronarografija","Tik Holterio EKG","Nieko – užtenka simptomų"],0,"Pradinis tyrimas – KT angiografija (mažesnė–vidutinė tikimybė) arba funkcinis vaizdinis tyrimas (stresinė echoKG, SPECT, MRT)."],
+  ["Diagnozuotas LVAS. Kurie vaistai gerina PROGNOZĘ?",["Statinai, aspirinas, AKFI ar ARB","Nitratai ir ranolazinas","Ivabradinas ir trimetazidinas","Tik trumpo veikimo nitroglicerinas"],0,"Prognozę gerina antiagregantai, statinai (MTL < 1,4 mmol/l) ir AKFI (ypač su AH, CD). Simptomams – BAB ar KKB, nitratai."]]},
+ {t:"Simptomai nepaisant gydymo", s:"66 m. moteris serga LVAS, vartoja bisoprololį 5 mg, aspiriną, atorvastatiną 80 mg. Vis dar 2–3 k./sav. krūtinės angina einant 200 m (CCS III). Koronarografijoje – 90 % kairiosios VA kamieno stenozė, KS IF 45 %.",st:[
+  ["Kokia CCS klasė reiškia anginą einant < 200 m lygia vieta?",["CCS I","CCS II","CCS III","CCS IV"],2,"I – tik dideliu krūviu; II – nežymiai riboja; III – ryškiai riboja (< 200 m); IV – ramybėje ar minimaliu krūviu."],
+  ["Ką daryti dėl kairiosios VA kamieno stenozės?",["Tęsti tik medikamentinį gydymą","Revaskuliarizacija (dažniausiai AKŠ)","Skirti tik nitratus","Kartoti koronarografiją po metų"],1,"Reikšminga kamieno stenozė – revaskuliarizacija gerina prognozę; dažniausiai pasirenkama AKŠ (ypač esant daugiaarteriniam pažeidimui ar CD)."],
+  ["Kol laukiama operacijos, kuris vaistas tinkamiausias anginai papildomai mažinti?",["Pridėti ilgo veikimo nitratą arba dihidropiridininį KKB","Pridėti verapamilį prie BAB","Nutraukti statiną","Skirti NSAID"],0,"Prie BAB pridedamas dihidropiridininis KKB (amlodipinas) ar ilgo veikimo nitratas. Verapamilis + BAB – bradikardijos ir AV blokados rizika."]]}
+],
+uvas:[
+ {t:"STEMI greitosios pagalbos automobilyje", s:"62 m. vyras: prieš 1,5 val. prasidėjo stiprus spaudžiantis skausmas už krūtinkaulio, prakaitavimas. EKG – ST pakilimas II, III, aVF iki 3 mm, reciprokinė ST depresija I, aVL. AKS 105/70, ŠSD 58. Iki PVAI centro – 40 min kelio.", st:[
+  ["Diagnozė?",["Apatinės sienelės STEMI","Priekinės sienelės STEMI","NSTEMI","Perikarditas"],0,"ST pakilimas II, III, aVF – apatinė sienelė (dažniausiai RCA)."],
+  ["Kurias derivacijas būtina papildomai užregistruoti?",["V7–V9","Dešiniąsias V3R–V4R","aVR","Nereikia"],1,"Esant apatiniam MI ieškoma DS infarkto (V3R–V4R) – tada vengiama nitratų ir diuretikų, reikia skysčių."],
+  ["Kokia reperfuzijos strategija?",["Fibrinolizė vietoje","Tiesioginis vežimas pirminei PVAI","Stebėti troponiną","Tik antiagregantai"],1,"PVAI įmanoma per ≤ 120 min – pirminė PVAI. Fibrinolizė – tik jei PVAI per 120 min negalima."],
+  ["Kuris vaistų derinys skiriamas iki PVAI?",["Aspirinas + P2Y12 inhibitorius (pvz., tikagreloras) + heparinas","Tik nitroglicerinas","Varfarinas + klopidogrelis","Amiodaronas"],0,"DAPT ir antikoaguliantas PVAI metu; nitratų atsargiai dėl galimo DS MI ir žemo AKS."]]},
+ {t:"Krūtinės skausmas, EKG be ST pakilimo", s:"71 m. moteris, serga CD ir LIL. Kartojasi krūtinės skausmo epizodai 2 paras, paskutinis truko 25 min. Dabar skausmo nėra. EKG – ST depresija V4–V6 1 mm. Troponino I po 1 val. reikšmingai padidėjo. AKS 140/80, hemodinamika stabili.", st:[
+  ["Diagnozė?",["Nestabili krūtinės angina","NSTEMI","STEMI","Stabili krūtinės angina"],1,"Išemijos simptomai + troponino dinamika be ST pakilimo – NSTEMI."],
+  ["Kokia invazinės strategijos skuba?",["Iškart (< 2 val.)","Ankstyva – per 24 val.","Per 72 val. ar planinė","Nereikia"],1,"Patvirtintas NSTEMI (didelė rizika) – koronarografija per 24 val. Iškart – tik esant nestabilumui, nepraeinančiam skausmui, aritmijoms, ŪŠN."],
+  ["Kokia ilgalaikė prevencija po MI?",["DAPT 12 mėn., didelio intensyvumo statinas, BAB, AKFI, reabilitacija","Tik aspirinas 1 mėn.","Varfarinas visam gyvenimui","Tik dieta"],0,"Taip pat AKS ir CD kontrolė; MTL tikslas < 1,4 mmol/l."]]}
+],
+"ekg-isl":[
+ {t:"Pakitusi EKG ir naujas kojytės blokada", s:"68 m. vyras, 2 val. trunkantis stiprus krūtinės skausmas, šaltas prakaitas. EKG – sinusinis ritmas, QRS 140 ms, V1 – W forma, V6 – M forma. Ankstesnėje EKG prieš metus – QRS normalus.", st:[
+  ["Kokia laidumo blokada?",["DHKB","KHKB","KHKPŠB","WPW"],1,"V1 – W, V6 – M, QRS ≥ 120 ms – kairiosios Hiso kojytės blokada."],
+  ["Kaip vertinti naują KHKB su išemijos simptomais?",["Kaip STEMI ekvivalentą – skubi koronarografija","Nereikšminga","Kartoti EKG po savaitės","Tik troponinas po 24 val."],0,"Nauja KHKB su tipišku skausmu gydoma kaip STEMI – skubi reperfuzija."],
+  ["Kokia arterija dažniausiai lemia priekinės sienelės STEMI (V1–V4)?",["RCA","LCx","LAD","Kairioji poraktinė"],2,"Priekinė sienelė – LAD; šoninė – LCx; apatinė – RCA."]]},
+ {t:"Aukšti QRS ir AH", s:"55 m. vyras 10 m. serga negydoma AH. EKG: S V1 = 18 mm, R V5 = 24 mm, ST depresija ir asimetriški neigiami T V5–V6.", st:[
+  ["Ką rodo EKG?",["KS hipertrofiją su perkrovos pokyčiais","Užpakalinį MI","Perikarditą","Hiperkalemiją"],0,"S V1 + R V5 = 42 mm > 35 mm (Sokolow–Lyon), ST–T „perkrovos“ pokyčiai V5–V6."],
+  ["Kuri iš būklių NĖRA dažna KSH priežastis?",["AH","Aortos stenozė","Hipertrofinė kardiomiopatija","Prieširdžių pertvaros defektas"],3,"PPD perkrauna dešiniąsias ertmes. KSH sukelia AH, AS, HKMP, koarktacija, amiloidozė."],
+  ["Kuris tyrimas geriausiai patvirtins KSH?",["Echokardiografija (miokardo masės indeksas)","Spirometrija","Krūtinės Ro","Troponinas"],0,"Echo MMI > 115 g/m² vyrams (> 95 g/m² moterims)."]]}
+],
+ah:[
+ {t:"Pirmą kartą nustatytas padidėjęs AKS", s:"52 m. vyras profilaktinio patikrinimo metu: AKS 158/96 ir 162/98 mmHg (du vizitai). Rūko, KMI 31. EKG ir echoKG – be KSH, eGFR 85, albuminurijos nėra, CD neserga.", st:[
+  ["Laipsnis ir stadija?",["I° AH, 1 stadija","II° AH, 1 stadija","I° AH, 2 stadija","II° AH, 2 stadija"],1,"Sistolinis 158–162 – II° (imama aukštesnė kategorija); OTP, CD, LIL nėra – 1 stadija."],
+  ["Kada pradėti vaistus?",["Iškart kartu su gyvenimo būdo keitimu","Po 6 mėn. gyvenimo būdo keitimo","Tik jei atsiras OTP","Tik jei AKS > 180/110"],0,"II° AH – vaistai iškart."],
+  ["Koks pradinis gydymas?",["Dviejų vaistų derinys vienoje tabletėje (AKFI/ARB + KKB ar diuretikas)","BAB monoterapija","Moksonidinas","Alfa blokatorius"],0,"Daugumai pacientų – dvigubas derinys (SPC)."],
+  ["Koks tikslinis AKS šiam 52 m. pacientui?",["< 150/90","< 140/90","< 130/80 (siekiant 120–129)","< 110/70"],2,"18–64 m. – < 130/80, jei toleruojama 120–129 sistolinis."]]},
+ {t:"AKS nesikontroliuoja trimis vaistais", s:"60 m. moteris vartoja perindoprilį 10 mg, amlodipiną 10 mg ir indapamidą 1,5 mg. PAKS 24 val. vidurkis 152/94. Vaistus vartoja reguliariai, matuojama tinkama manžete. K⁺ 3,4 mmol/l.", st:[
+  ["Kaip vadinama tokia AH?",["Baltojo chalato","Rezistentinė (atspari)","Slaptoji","Antrinė"],1,"Tikslas nepasiektas optimaliomis 3 vaistų (vienas – diuretikas) dozėmis, pseudorezistentiškumas paneigtas."],
+  ["Kas pridedama ketvirtu vaistu?",["Spironolaktonas mažomis dozėmis","Antras AKFI","Verapamilis","Kaptoprilis"],0,"Rezistentinė AH – MRA (spironolaktonas); netoleruojant – eplerenonas, BAB, alfa blokatorius."],
+  ["Rezistentinė AH ir hipokalemija. Kokią antrinę AH reikia atmesti?",["Pirminį hiperaldosteronizmą","Hipotirozę","Feochromocitomą","Aortos koarktaciją"],0,"Tiriamas aldosterono ir renino santykis."]]}
+],
+sn:[
+ {t:"Dusulys ir edemos", s:"67 m. vyras, persirgęs priekiniu MI. 2 mėn. didėja dusulys lipant į 1 aukštą, kulkšnių edemos, naktį miega ant 2 pagalvių. NT-proBNP 2400 pg/ml. EchoKG – KS IF 30 %.", st:[
+  ["Kokia diagnozė ir NYHA klasė?",["ŠN su sumažėjusia IF, NYHA III","ŠN su išlikusia IF, NYHA II","ŠN su sumažėjusia IF, NYHA I","Plaučių embolija"],0,"IF ≤ 40 % – ŠNsIF; simptomai nedidelio krūvio metu – NYHA III."],
+  ["Kurie vaistai sudaro pagrindinį ŠNsIF gydymą („4 kolonos“)?",["ARNI (ar AKFI), BAB, MRA, SGLT2 inhibitorius","Diuretikas, digoksinas, nitratai, KKB","Tik diuretikai","Amiodaronas, verapamilis"],0,"Visi keturi gerina išgyvenamumą; diuretikai – simptomams (stazei)."],
+  ["Kurio vaisto reikia vengti?",["Verapamilio ar diltiazemo","Bisoprololio","Dapagliflozino","Spironolaktono"],0,"Nedihidropiridiniai KKB blogina ŠNsIF; taip pat vengti NSAID, glitazonų."],
+  ["Po 3 mėn. optimalaus gydymo IF 32 %, QRS 160 ms su KHKB. Kas toliau?",["CRT-D implantacija","Tik didinti diuretiką","Širdies transplantacija iš karto","Nieko"],0,"IF ≤ 35 %, KHKB, QRS ≥ 150 ms – CRT (su defibriliatoriumi pirminei profilaktikai)."]]},
+ {t:"Ūminis dekompensuotas ŠN", s:"78 m. moteris naktį pabudo uždususi, sėdi, kosti rausvais putotais skrepliais. AKS 190/105, ŠSD 115, SpO₂ 85 %, abipus drėgni karkalai.", st:[
+  ["Kas tai?",["Ūminė plaučių edema (ŪŠN)","Astmos priepuolis","Pneumonija","PATE"],0,"Ortopnėja, putoti skrepliai, karkalai, hipoksemija – plaučių edema."],
+  ["Pirmieji veiksmai?",["Sodinti, O₂ / NIV, i/v kilpinis diuretikas, nitratai (AKS aukštas)","Paguldyti horizontaliai ir skirti skysčių","Skirti BAB i/v","Tik antibiotikai"],0,"Esant aukštam AKS – vazodilatatoriai (nitratai) ir furosemidas; CPAP/NIV gerina oksigenaciją."],
+  ["Kokia būtų tinkamiausia taktika, jei AKS būtų 80/50 ir galūnės šaltos?",["Kardiogeninis šokas – inotropai ar vazopresoriai, priežasties paieška","Didelės nitratų dozės","BAB","Daug skysčių be stebėjimo"],0,"Hipoperfuzija ir hipotenzija – kardiogeninis šokas; nitratai kontraindikuotini."]]}
+],
+kmp:[
+ {t:"Sinkopė jaunam sportininkui", s:"19 m. krepšininkas treniruotėje prarado sąmonę. Dėdė staiga mirė 30 m. Auskultuojant – sistolinis ūžesys, sustiprėjantis atsistojus ir per Valsalvos mėginį. EKG – ryški KSH, gilūs Q I, aVL, V5–V6.", st:[
+  ["Labiausiai tikėtina diagnozė?",["Hipertrofinė obstrukcinė kardiomiopatija","Aortos stenozė","Dilatacinė kardiomiopatija","Miokarditas"],0,"Ūžesys stiprėja mažėjant prieškrūviui (atsistojus, Valsalva) – dinaminė KS ištekamojo trakto obstrukcija."],
+  ["Kuris tyrimas patvirtins?",["Echokardiografija (pertvaros storis ≥ 15 mm, gradientas)","Koronarografija","Spirometrija","D-dimerai"],0,"Taip pat širdies MRT, genetiniai tyrimai šeimos nariams."],
+  ["Kokių vaistų VENGTI?",["Nitratų, dihidropiridininių KKB, diuretikų didelėmis dozėmis","BAB","Verapamilio","Disopiramido"],0,"Vazodilatatoriai ir hipovolemija didina obstrukciją. Gydoma BAB, verapamiliu, mavakamtenu; didelė SCD rizika – IKD."]]},
+ {t:"Dusulys ir storas miokardas vyresniam", s:"74 m. vyras: progresuojantis dusulys, abipusis riešo kanalo sindromas anamnezėje. EchoKG – sustorėjusios KS sienos, „žvaigždėtas“ miokardas, IF 50 %. EKG – maža QRS voltažas.", st:[
+  ["Kokia būklė įtariama?",["Širdies amiloidozė (restrikcinė KMP)","HKMP","AH sukelta KSH","Perikardo konstrikcija"],0,"Stora siena echoKG, bet mažas voltažas EKG – tipiškas amiloidozės „nesutapimas“."],
+  ["Kuris tyrimas padeda nustatyti transtiretino amiloidozę neinvaziškai?",["Kaulų scintigrafija (DPD/PYP) + lengvųjų grandinių tyrimas","Koronarografija","Spirometrija","Holteris"],0,"Kartu atmetama AL amiloidozė (serumo ir šlapimo laisvosios lengvosios grandinės)."],
+  ["Kokia specifinė ATTR amiloidozės terapija?",["Tafamidis","Varfarinas","Ivabradinas","Digoksinas didelėmis dozėmis"],0,"Tafamidis stabilizuoja transtiretiną ir mažina mirštamumą."]]}
+],
+ie:[
+ {t:"Karščiavimas ir naujas ūžesys", s:"34 m. vyras, švirkščiasi narkotikus. 2 sav. karščiuoja iki 39 °C, kosti. Auskultuojant – holosistolinis ūžesys apatinėje krūtinkaulio dalyje, stiprėja įkvėpus. Krūtinės KT – keli septiniai plaučių embolai.", st:[
+  ["Kurio vožtuvo IE labiausiai tikėtinas?",["Triburio","Mitralinio","Aortos","Plaučių arterijos"],0,"Narkomanams – dešinės pusės IE (triburio), septiniai plaučių embolai."],
+  ["Kokį tyrimą atlikti PIRMA prieš antibiotikus?",["3 kraujo pasėlių setus iš skirtingų vietų","Tik CRB","Šlapimo pasėlį","Skreplių tyrimą"],0,"3 setai (po ~20 ml) iki antibiotikų; kartu – echokardiografija (TTE, prireikus TEE)."],
+  ["Dažniausias sukėlėjas šiems pacientams?",["Staphylococcus aureus","Streptococcus viridans","Enterococcus faecalis","HACEK"],0,"Narkomanams ir su kateteriais – S. aureus."]]},
+ {t:"Karščiavimas po dantų gydymo", s:"58 m. moteris su mitralinio vožtuvo prolapsu: po dantų gydymo 3 sav. subfebrilus karščiavimas, silpnumas, svorio kritimas. Nagų pagalvėlėse – smulkios hemoragijos, ant delnų – neskausmingos dėmelės. 3 kraujo pasėliuose – Streptococcus viridans. TEE – 8 mm vegetacija ant MV.", st:[
+  ["Kaip vadinamos neskausmingos dėmelės delnuose?",["Džeinvėjaus (Janeway) dėmės","Oslerio mazgeliai","Roto dėmės","Ksantomos"],0,"Džeinvėjaus – neskausmingos (kraujagysliniai reiškiniai); Oslerio – skausmingi (imunologiniai)."],
+  ["Ar diagnozė patvirtinta pagal Duke kriterijus?",["Taip – 2 dideli kriterijai (tipiškas sukėlėjas pasėliuose + vegetacija)","Ne – reikia biopsijos","Ne – reikia 5 mažų","Tik galima"],0,"2 dideli kriterijai = patvirtintas IE."],
+  ["Kada būtų skubios operacijos indikacija?",["Ūminis vožtuvo nesandarumas su refrakterine plaučių edema","Vegetacija 5 mm be komplikacijų","Bet koks karščiavimas","Teigiami pasėliai"],0,"Taip pat nekontroliuojama infekcija (abscesas), didelės vegetacijos (> 10 mm) su embolija."]]}
+],
+miokarditas:[
+ {t:"Krūtinės skausmas po virusinės infekcijos", s:"24 m. vyras prieš 10 d. sirgo gripu. Dabar krūtinės skausmas, plakimas, dusulys krūvio metu. EKG – difuziniai ST–T pokyčiai, skilvelinės ES. Troponinas padidėjęs. Koronarografija – VA be pakitimų.", st:[
+  ["Labiausiai tikėtina diagnozė?",["Ūminis miokarditas","STEMI","Takotsubo","PATE"],0,"Jaunas, po virusinės infekcijos, ↑ troponinas, normalios VA."],
+  ["Kuris neinvazinis tyrimas geriausiai patvirtina?",["Širdies MRT (edema, vėlyvasis gadolinio kaupimasis)","Krūtinės Ro","Spirometrija","Holteris"],0,"Lake Louise kriterijai MRT; auksinis standartas – endomiokardo biopsija (sunkiais atvejais)."],
+  ["Kokia rekomendacija dėl sporto?",["Vengti intensyvaus fizinio krūvio 3–6 mėn.","Sportuoti iškart","Tik plaukimas","Apribojimų nėra"],0,"Fizinis krūvis didina aritmijų ir staigios mirties riziką."]]},
+ {t:"Miokarditas su ŠN", s:"39 m. moteris: progresuojantis dusulys po pneumonijos, EKG – sinusinė tachikardija, bigeminija. EchoKG – visų ertmių dilatacija, KS IF 20 %. MRT – vėlyvasis gadolinio kaupimasis, edema. VA nepakitusios.", st:[
+  ["Kokį gydymą skirsite?",["AKFI (ARNI), BAB, diuretikus, MRA – ŠN gydymas","Aspirinas ir statinai","Tik antiagregantai","Nitratai"],0,"Miokarditas su ŠNsIF gydomas kaip ŠN."],
+  ["Kokių vaistų vengti ūminėje fazėje?",["NSAID","BAB","Diuretikų","AKFI"],0,"NSAID gali bloginti miokardito eigą (skirtingai nei perikardito)."],
+  ["Kada svarstoma endomiokardo biopsija?",["Fulminantinė eiga, nepaaiškinamas ŠN su aritmijomis ar blokadomis, įtarus milžiniškų ląstelių miokarditą","Visiems","Niekada","Tik vaikams"],0,"Biopsija lemia imunosupresinio gydymo sprendimą."]]}
+],
+perikardas:[
+ {t:"Aštrus skausmas, lengvėjantis pasilenkus", s:"30 m. vyras po peršalimo: aštrus krūtinės skausmas, stiprėja įkvėpus ir gulint, lengvėja pasilenkus į priekį. Girdima perikardo trintis. EKG – difuzinis įgaubtas ST pakilimas ir PR depresija.", st:[
+  ["Diagnozė?",["Ūminis perikarditas","STEMI","Pleuritas","Aortos disekacija"],0,"Būdingas skausmas, trintis, difuzinis ST ir PR depresija."],
+  ["Pirmo pasirinkimo gydymas?",["NSAID (ibuprofenas ar aspirinas) + kolchicinas","Kortikosteroidai visiems","Antibiotikai","Antikoaguliantai"],0,"Kolchicinas (3 mėn.) mažina recidyvų riziką; steroidai – tik esant kontraindikacijoms ar specifinėms priežastims."],
+  ["Kuris požymis rodo didelę riziką ir hospitalizacijos poreikį?",["Karščiavimas > 38 °C, didelis skystis, tamponada, neveiksmingi NSAID","Skausmas įkvėpus","PR depresija","Jaunas amžius"],0,"Taip pat poūmė eiga, imunosupresija, antikoaguliantai, miokardo pažaida."]]},
+ {t:"Hipotenzija ir dusūs tonai", s:"65 m. moteris su metastazavusiu krūties vėžiu: dusulys, AKS 85/60, ŠSD 120, išsiplėtusios kaklo venos, dusūs širdies tonai. Įkvepiant sistolinis AKS sumažėja 15 mmHg.", st:[
+  ["Kokia būklė?",["Širdies tamponada","Ūminis MI","PATE","Sepsis"],0,"Beko triada (hipotenzija, išsiplėtusios jungo venos, dusūs tonai) + paradoksinis pulsas."],
+  ["Kuris tyrimas skubiai patvirtina?",["Echokardiografija","Koronarografija","KT su kontrastu po 2 d.","Spirometrija"],0,"Skystis su DPr ir DS diastoliniu kolapsu."],
+  ["Gydymas?",["Skubi perikardocentezė","Diuretikai","Nitratai","BAB"],0,"Diuretikai ir vazodilatatoriai pavojingi (mažina prieškrūvį)."]]}
+],
+"sn-chir":[
+ {t:"Galutinės stadijos ŠN", s:"52 m. vyras su išemine kardiomiopatija, KS IF 15 %, NYHA IV nepaisant optimalaus gydymo ir CRT-D. Kartojasi hospitalizacijos, kreatininas didėja, priklausomas nuo inotropų.", st:[
+  ["Kokia tai ŠN stadija?",["D (pažengęs, refrakterinis ŠN)","A","B","C"],0,"D stadija – simptomai ramybėje nepaisant maksimalaus gydymo."],
+  ["Kurie chirurginio gydymo būdai svarstomi?",["Širdies transplantacija arba mechaninė kraujotakos palaikymo sistema (LVAD)","Tik AKŠ","Vožtuvo plastika visiems","Perikardektomija"],0,"LVAD – kaip tiltas iki transplantacijos arba galutinis gydymas."],
+  ["Kuri yra absoliuti širdies transplantacijos kontraindikacija?",["Aktyvus alkoholizmas ar narkomanija","Amžius 52 m.","IF 15 %","Persirgtas MI"],0,"Taip pat aktyvi infekcija, aktyvus vėžys, negrįžtama didelė PH, sunkios psichikos ligos."]]},
+ {t:"Išeminė kardiomiopatija ir revaskuliarizacija", s:"61 m. vyrui 3 VA pažaida, KS IF 30 %, CD. Gyvybingas miokardas MRT tyrime. Angina CCS III, ŠN NYHA II.", st:[
+  ["Kokia revaskuliarizacija tinkamiausia?",["AKŠ","PVAI vienai arterijai","Tik vaistai","Transplantacija"],0,"Daugiaarterinė pažaida + CD + ↓ IF – AKŠ gerina išgyvenamumą (STICH)."],
+  ["Kodėl svarbu nustatyti miokardo gyvybingumą?",["Revaskuliarizacija naudinga tik gyvybingam (hibernuotam) miokardui","Nustatyti vožtuvų ydas","Įvertinti plaučių funkciją","Nesvarbu"],0,"Randas po revaskuliarizacijos nepagerės."],
+  ["Kuris arterinis šuntas geriausias LAD?",["Kairioji vidinė krūties arterija (LIMA)","Didžioji poodinė vena","Stipininė arterija į LAD visada","Blužnies arterija"],0,"LIMA→LAD – ilgiausiai atviras, gerina išgyvenamumą."]]}
+],
+"plauciai-pleura":[
+ {t:"Spontaninis pneumotoraksas", s:"22 m. aukštas, lieknas vyras, rūko. Staiga atsirado dusulys ir dūrimas dešinėje krūtinės pusėje. Dešinėje susilpnėjęs alsavimas, perkusija – dėžutinis garsas. SpO₂ 94 %, AKS normalus.", st:[
+  ["Labiausiai tikėtina diagnozė?",["Pirminis spontaninis pneumotoraksas","Pneumonija","PATE","Pleuritas"],0,"Jaunas, aukštas, lieknas rūkantis vyras – tipiškas pacientas."],
+  ["Kuris tyrimas patvirtins?",["Krūtinės Ro","Spirometrija","D-dimerai","EKG"],0,"Matoma visceralinės pleuros linija be plaučių piešinio periferijoje."],
+  ["Pneumotoraksas kartojasi trečią kartą. Koks gydymas?",["VATS bulektomija su pleurodeze","Tik stebėjimas","Antibiotikai","Bronchoskopija"],0,"Recidyvuojantis pneumotoraksas – chirurginis gydymas."]]},
+ {t:"Įtampos pneumotoraksas po traumos", s:"35 m. vyras po autoavarijos: stiprus dusulys, AKS 75/40, ŠSD 135, trachėja pasislinkusi į kairę, dešinėje alsavimo negirdėti, išsiplėtusios kaklo venos.", st:[
+  ["Kokia būklė?",["Įtampos pneumotoraksas dešinėje","Hemotoraksas kairėje","Širdies tamponada","Šonkaulių lūžiai be komplikacijų"],0,"Tarpuplautis pasislenka į sveikąją pusę, venų grąža mažėja → šokas."],
+  ["Pirmas veiksmas?",["Skubi adatinė dekompresija, po to pleuros drenažas","Krūtinės KT","Laukti Ro","Intubuoti ir tik tada vertinti"],0,"Klinikinė diagnozė – negaišti laiko tyrimams."],
+  ["Kur atliekama adatinė dekompresija suaugusiajam?",["4–5 tarpšonkaulis priekinėje pažastinėje linijoje (arba 2 tarpšonkaulis vidurinėje raktikaulio linijoje)","Krūtinkaulio viduryje","Ties stuburu","Pilvo srityje"],0,"Dabartinės rekomendacijos dažniau nurodo 4–5 tarpšonkaulį šoniniame krūtinės paviršiuje."]]}
+],
+aneurizmos:[
+ {t:"Atsitiktinai rasta PAA", s:"70 m. rūkantis vyras, pilvo UG dėl kitos priežasties: infrarenalinė PAA 46 mm. Simptomų nėra, serga AH.", st:[
+  ["Ar operuoti dabar?",["Ne – stebėti ir koreguoti rizikos veiksnius","Taip, skubiai","Taip, planine tvarka","Tik EVAR"],0,"Operacijos indikacija vyrams – > 5,5 cm."],
+  ["Kaip dažnai kartoti UG?",["Kas 5 m.","Kas 3 m.","Kas 1 m.","Kas 6 mėn."],2,"< 50 mm – kas metus; ≥ 50 mm – kas 6 mėn."],
+  ["Kuris veiksnys labiausiai lėtina augimą ir mažina riziką?",["Rūkymo nutraukimas","Antibiotikai","Varfarinas","Fizinio krūvio vengimas"],0,"Taip pat AH kontrolė, statinai, antiagregantai."]]},
+ {t:"Plyšusi aneurizma", s:"78 m. vyras staiga pajuto stiprų pilvo ir juosmens skausmą, trumpam neteko sąmonės. AKS 80/50, ŠSD 125, pilve – pulsuojantis darinys.", st:[
+  ["Kas įtariama?",["Plyšusi PAA","Inkstų diegliai","Pankreatitas","MI"],0,"Skausmas + hipotenzija + pulsuojantis darinys."],
+  ["Jei pacientas stabilizuojasi, kuris tyrimas prieš operaciją?",["KT angiografija","Pilvo Ro","Kolonoskopija","MRT"],0,"Nestabiliam – tiesiai į operacinę."],
+  ["Kas taikoma esant tinkamai anatomijai ir stabiliai būklei?",["EVAR (dažnai pirmenybė plyšusiai PAA, jei anatomija tinka)","Tik stebėjimas","Tik vaistai","Fibrinolizė"],0,"Ligoninės mirtingumas po plyšusios aortos operacijos ~50 %."]]}
+]
+};
+
+Object.assign(CASES,{
+ritmas:[
+ {t:"Staigus širdies plakimas jaunai moteriai", s:"26 m. moteris: staiga prasidėjęs reguliarus plakimas, 190 k/min. AKS 115/75, sąmoninga. EKG – siaurų QRS reguliari tachikardija, P bangų nematyti.", st:[
+  ["Labiausiai tikėtina diagnozė?",["AVMRT","PV","Skilvelinė tachikardija","Sinusinė tachikardija"],0,"Jauna moteris, staigi pradžia, siauri QRS, P paslėpta QRS."],
+  ["Pirmas veiksmas?",["Vagaliniai mėginiai (modifikuotas Valsalvos)","Elektrinė kardioversija","Amiodaronas","Digoksinas"],0,"Hemodinamika stabili – pirmiausia vagaliniai mėginiai."],
+  ["Nepadėjo. Kas toliau?",["Adenozinas 6 mg greitai i/v, prireikus 12 mg","Verapamilis per os","BAB per os","Stebėti"],0,"Adenozinas laikinai blokuoja AV mazgą ir nutraukia AVMRT."],
+  ["Priepuoliai kartojasi kas mėnesį. Radikalus gydymas?",["Lėtojo tako radiodažninė abliacija","IKD","EKS","Antikoaguliantai"],0,"Sėkmė > 95 %; rizika – AV blokada."]]},
+ {t:"Pirmą kartą nustatytas PV", s:"72 m. moteris serga AH ir CD. Atsitiktinai – nereguliarus pulsas 110 k/min. EKG – PV. Simptomų nedaug, trukmė nežinoma. KS IF 55 %, KrKl 60 ml/min.", st:[
+  ["CHA₂DS₂-VASc balai?",["2","3","4","5"],3,"Moteris 1 + amžius 65–74 1 + AH 1 + CD 1 = 4."],
+  ["Kokia antikoaguliacija?",["NGAK (pvz., apiksabanas 5 mg 2 k./d.)","Aspirinas","Klopidogrelis","Nereikia"],0,"≥ 2 balai – antikoaguliacija; NGAK pirmenybė prieš varfariną."],
+  ["Kaip kontroliuoti dažnį (IF 55 %)?",["BAB arba nedihidropiridinis KKB","Tik digoksinas","Amiodaronas visiems","Adenozinas"],0,"IF > 40 % – BAB, diltiazemas, verapamilis, digoksinas."],
+  ["Ar galima iškart atlikti kardioversiją?",["Ne – trukmė nežinoma: ≥ 3 sav. antikoaguliacija arba TEE be trombų","Taip, iškart","Tik su aspirinu","Niekada"],0,"Po kardioversijos – antikoaguliacija ≥ 4 sav."]]}
+],
+"ritmas-vadovelis":[
+ {t:"WPW ir greitas nereguliarus ritmas", s:"28 m. vyras: plakimas, svaigulys. EKG – labai greitas (~250 k/min), visiškai nereguliarus ritmas su plačiais, kintančios formos QRS. Ankstesnėje EKG – trumpas PR ir delta banga.", st:[
+  ["Kas tai?",["Preeksituotas PV (PV su WPW)","Ortodrominė AVRT","AVMRT","Monomorfinė ST"],0,"Nereguliarūs, platūs, kintantys QRS ir WPW anamnezė."],
+  ["Kurių vaistų negalima?",["AV mazgą blokuojančių: adenozino, verapamilio, diltiazemo, digoksino, BAB","Prokainamido","Ibutilido","Elektrinės kardioversijos"],0,"Visi impulsai pereitų per papildomą pluoštą → SV."],
+  ["Jei pacientas nestabilus – gydymas?",["Sinchronizuota elektrinė kardioversija","Adenozinas","Verapamilis","Stebėti"],0,"Vėliau – Kento pluošto abliacija."]]},
+ {t:"Plačių QRS tachikardija po MI", s:"66 m. vyras, prieš 3 m. persirgo priekiniu MI. Staiga – plakimas, ŠSD 170, QRS 170 ms, VA disociacija, capture kompleksai. AKS 110/70, sąmoningas.", st:[
+  ["Diagnozė?",["Monomorfinė skilvelinė tachikardija","SVT su aberacija","PP 2:1","Sinusinė tachikardija"],0,"VA disociacija ir capture kompleksai įrodo ST; randas po MI – dažniausia priežastis."],
+  ["Stabiliam pacientui – vaistas?",["Amiodaronas 300 mg i/v","Verapamilis","Adenozinas 24 mg","Digoksinas"],0,"Plačių QRS tachikardija laikoma ST, kol neįrodyta kitaip – verapamilio negalima."],
+  ["Prevencija ateityje?",["IKD (antrinė profilaktika), BAB","Tik aspirinas","EKS","Nieko"],0,"Išgyvenus ST ar SV – IKD."]]}
+],
+"ekg-tachi":[
+ {t:"„Pjūklo dantys“ EKG", s:"64 m. vyras serga LOPL. Plakimas 2 d. EKG – reguliari siaurų QRS tachikardija 150 k/min, II, III, aVF – reguliarios FF bangos ~300/min.", st:[
+  ["Diagnozė?",["Prieširdžių plazdėjimas 2:1","PV","AVMRT","Sinusinė tachikardija"],0,"Reguliarus ~150 + FF bangos II, III, aVF."],
+  ["Ar reikia antikoaguliacijos?",["Taip – pagal CHA₂DS₂-VASc, kaip PV","Ne, PP trombų nesukelia","Tik aspirinas","Tik po abliacijos"],0,"PP rizika vertinama kaip PV."],
+  ["Veiksmingiausias ilgalaikis gydymas?",["Kavotrikuspidinio istmo radiodažninė abliacija","Digoksinas","Amiodaronas visam gyvenimui","EKS"],0,"Sėkmė iki 95 %."]]},
+ {t:"Ekstrasistolės ir nerimas", s:"45 m. moteris jaučia „permušimus“. EKG – ankstyvi, platūs (140 ms), vienodos formos QRS be P, po jų pilna kompensacinė pauzė. EchoKG norma, Holteryje – 3 000 ES per parą, monomorfinės.", st:[
+  ["Kokios ekstrasistolės?",["Monomorfinės skilvelinės","Prieširdinės","AV mazgo","Polimorfinės skilvelinės"],0,"Platūs QRS be P, pilna pauzė, vienodos formos."],
+  ["Ką daryti?",["Paaiškinti, kad nepavojingos; esant simptomams – BAB","Skubiai implantuoti IKD","Amiodaronas","Abliacija iškart"],0,"Sveika širdis, monomorfinės, < 10 000/parą – gerybinės."],
+  ["Kada svarstoma abliacija?",["> 10 000 ES per parą, monomorfinės, vaistai neveiksmingi ar mažėja IF","Esant bet kokioms ES","Niekada","Tik vaikams"],0,"Dažnos ES gali sukelti kardiomiopatiją."]]}
+],
+laidumas:[
+ {t:"Sinkopė ir retas pulsas", s:"79 m. vyras du kartus neteko sąmonės. Pulsas 34 k/min. EKG – P dažnis 80, QRS 34, platūs, P ir QRS nesusiję. Vaistų, lėtinančių ritmą, nevartoja.", st:[
+  ["Diagnozė?",["III° AV blokada","II° 1 tipo AV blokada","Sinusinė bradikardija","SA blokada"],0,"Prieširdžiai ir skilveliai dirba nepriklausomai."],
+  ["Lygis pagal platų QRS ir dažnį?",["Infrahisinė (Purkinje gelbstintis ritmas)","Suprahisinė","SA mazgo","Prieširdžių"],0,"Platus QRS ir 20–40 k/min – nestabilus žemas ritmas."],
+  ["Laikinas gydymas, kol bus implantuotas EKS?",["Transkutaninė ar transveninė stimuliacija, izoproterenolis ar adrenalinas","Atropinas – visada veiksmingas","BAB","Verapamilis"],0,"Atropinas infrahisinei blokadai dažnai neveiksmingas."],
+  ["Nuolatinis gydymas (sinusinis prieširdžių ritmas)?",["DDD EKS","VVI EKS","AAI EKS","Tik vaistai"],0,"DDD išlaiko AV sinchroniją."]]},
+ {t:"Svaigimas ir pauzės", s:"74 m. moteris: svaigimas, kartais tamsu akyse. Holteris – sinusinė bradikardija 38–45, pauzės iki 4 s, epizodai PV su ŠSD 140; po PV nutrūkimo – 5 s pauzė su sinkope.", st:[
+  ["Kokia SMD forma?",["Bradi-tachi sindromas","Chronotropinis nepakankamumas","SA blokada","Vaistų sukelta bradikardija"],0,"Bradikardija kaitaliojasi su PV, po kurio – ilga pauzė."],
+  ["Gydymas?",["EKS ir tada – vaistai dažnio kontrolei bei antikoaguliacija","Tik BAB","Tik atropinas","Stebėti"],0,"EKS leidžia saugiai skirti ritmą lėtinančių vaistų."],
+  ["Kodėl SMD dažniausiai gydoma tik esant simptomams?",["SA automatizmas patvarus, ligos eiga retai pavojinga gyvybei","Nes progresuoja į III° AVB visada","Nes EKS neveikia","Nes būna tik jauniems"],0,"Skirtingai nei Mobitz II ar III° AVB."]]}
+],
+"ekg-laidumas":[
+ {t:"Iškrentantys QRS", s:"68 m. vyras be simptomų. EKG – PR pastovus 180 ms, kas 4-ta P neperduodama (QRS iškrenta), QRS 130 ms (DHKB).", st:[
+  ["Kokia blokada?",["II° 2 tipo (Mobitz II)","II° 1 tipo (Wenckebach)","I° AVB","III° AVB"],0,"PR pastovus, QRS staiga iškrenta."],
+  ["Ar reikia EKS, jei simptomų nėra?",["Taip","Ne","Tik jei ŠSD < 30","Tik jaunesniems"],0,"Mobitz II – infrahisinė, gali progresuoti į III° AVB."],
+  ["Kuris vaistas vengtinas?",["Bisoprololis","Atorvastatinas","Perindoprilis","Pantoprazolis"],0,"BAB, verapamilis, diltiazemas, amiodaronas lėtina laidumą."]]},
+ {t:"Ilgėjantis PR jaunam sportininkui", s:"21 m. bėgikas be simptomų. Naktinis Holteris – PR palaipsniui ilgėja, kol viena P lieka be QRS; dieną krūvio metu – laidumas 1:1.", st:[
+  ["Kokia blokada?",["II° 1 tipo (Wenckebach)","Mobitz II","III° AVB","2:1 AVB"],0,"Tipiškas laipsniškas PR ilgėjimas."],
+  ["Kodėl ji čia nepavojinga?",["AV mazgo lygis, vagotonija sportininkui, išnyksta krūvio metu","Nes visada praeina savaime","Nes QRS platus","Nes PR trumpas"],0,"Klajoklio nervo poveikis AV mazgui."],
+  ["Gydymas?",["Nereikia – tik stebėti","EKS","Atropinas kasdien","IKD"],0,"EKS – tik esant nuolatiniams simptomams."]]}
+],
+"ydos-igytos":[
+ {t:"Sinkopė ir sistolinis ūžesys", s:"79 m. vyras: dusulys, krūtinės skausmas krūvio metu, prieš mėnesį neteko sąmonės. Šiurkštus sistolinis ūžesys II tarpšonkaulyje dešinėje, plintantis į kaklą, II tonas susilpnėjęs. EchoKG – angos plotas 0,7 cm², Gvid 52 mmHg, IF 55 %. EuroSCORE II 9 %.", st:[
+  ["Diagnozė?",["Didelė simptominė aortos stenozė","AVN","MVN","HKMP"],0,"Triada + ūžesys į miego arterijas + < 1,0 cm², ≥ 40 mmHg."],
+  ["Kurio vaisto vengti?",["Nitratų","Mažų diuretikų dozių","Statinų","Antiagregantų"],0,"Vazodilatatoriai gali sukelti staigią hipotenziją."],
+  ["Gydymas?",["TAVI","Chirurginis protezavimas","Balioninė valvuloplastika kaip galutinis gydymas","Tik vaistai"],0,"≥ 75 m. ir EuroSCORE II > 8 % – TAVI."]]},
+ {t:"Dusulys ir mitralinė melodija", s:"48 m. moteris, vaikystėje dažnai sirgo anginomis. Dusulys krūvio metu, plakimas. Rausvi skruostai, sustiprėjęs I tonas, atsivėrimo tonas, diastolinis ūžesys viršūnėje. EKG – PV. EchoKG – MV anga 1,1 cm², PA slėgis 55 mmHg, burės judrios, kalcinozės nėra.", st:[
+  ["Diagnozė?",["Reumatinė mitralinė stenozė","MVN","AS","PPD"],0,"Mitralinė melodija, facies mitralis, PV."],
+  ["Antikoaguliacija?",["Varfarinas (INR 2–3)","Apiksabanas","Aspirinas","Nereikia"],0,"Vidutinė–didelė MS su PV – NGAK neskirtini."],
+  ["Intervencinis gydymas?",["Perkutaninė balioninė MV komisūrotomija","TAVI","MitraClip","Tik vaistai"],0,"Simptominė MS ≤ 1,5 cm² ir tinkama anatomija."]]}
+],
+"ydos-igimtos":[
+ {t:"Dusulys ir fiksuotas II tono skilimas", s:"36 m. moteris: dusulys krūvio metu, plakimas. Fiksuotas II tono skilimas, sistolinis ūžesys ties PA. EKG – nepilna DHKB. EchoKG – DS ir DPr dilatacija, antrinis PPD 18 mm, Qp/Qs 2,1, PKP 2 VU.", st:[
+  ["Kurios ertmės perkrautos?",["Dešiniosios (DPr, DS)","Kairiosios (KPr, KS)","Tik KS","Nė viena"],0,"Nuosrūvis iš KPr į DPr."],
+  ["Ar reikia uždaryti?",["Taip – Qp/Qs > 1,5 ir PKP < 5 VU","Ne, nes moteris","Tik po nėštumo","Ne, nes < 20 mm"],0,"Uždaroma nepriklausomai nuo simptomų."],
+  ["Kokiu būdu?",["Kateteriniu uždarikliu (antrinis PPD su pakankamais kraštais)","Tik operacija","Vaistais","Transplantacija"],0,"Sinus venosus ar primum – chirurgiškai."]]},
+ {t:"AH jaunam vyrui", s:"23 m. vyras: galvos skausmai, kraujavimas iš nosies. AKS rankose 170/95, kojose 120/80, šlaunies pulsas silpnas ir vėluoja. Sistolinis ūžesys nugaroje tarp menčių.", st:[
+  ["Diagnozė?",["Aortos koarktacija","Pirminė AH","Feochromocitoma","AAL"],0,"Rankų ir kojų AKS skirtumas, vėluojantis femoralinis pulsas."],
+  ["Koks Ro požymis gali būti?",["Šonkaulių uzūros dėl kolateralių","Tupinti antis","Mitralizacija","Bulos"],0,"Išsiplėtusios tarpšonkaulinės arterijos."],
+  ["Gydymo indikacija?",["AKS skirtumas > 20 mmHg ir AH – stentavimas ar operacija","Tik AKFI","Nereikia","Tik stebėti"],0,"Arba > 50 % susiaurėjimas su AH."]]}
+],
+"astma-lopl":[
+ {t:"Rūkantis vyras su dusuliu", s:"63 m. vyras, rūko 40 pakmečių. Kasdien kosti su skrepliais, dusulys einant greičiau. Spirometrija po bronchodilatatoriaus: FEV₁/FVC 0,58, FEV₁ 55 % normos. Per metus – 1 paūmėjimas be hospitalizacijos.", st:[
+  ["Diagnozė?",["LOPL","Astma","Bronchektazės","Intersticinė liga"],0,"Rizikos veiksniai, simptomai ir FEV₁/FVC < 0,7 po bronchodilatatoriaus."],
+  ["GOLD obstrukcijos laipsnis (FEV₁ 55 %)?",["GOLD 1","GOLD 2","GOLD 3","GOLD 4"],1,"GOLD 2: 50–79 %."],
+  ["Svarbiausias veiksmas ligos eigai keisti?",["Mesti rūkyti","Inhaliuojami kortikosteroidai visiems","Antibiotikai profilaktiškai","Deguonis"],0,"Rūkymo nutraukimas lėtina FEV₁ mažėjimą; skiepai, reabilitacija."],
+  ["Pradinis inhaliacinis gydymas su ryškiais simptomais?",["LAMA + LABA","Tik SABA pagal poreikį","IKS monoterapija","Teofilinas"],0,"Pagal GOLD – dvigubas ilgo veikimo bronchodilatatorius."]]},
+ {t:"Astmos paūmėjimas", s:"24 m. moteris, serga astma. Po peršalimo 2 d. didėja dusulys, švokštimas, kalba tik pavieniais žodžiais, sėdi pasilenkusi į priekį. ŠSD 126, KD 32, SpO₂ 89 %, PEF 45 % geriausio.", st:[
+  ["Paūmėjimo sunkumas?",["Sunkus","Lengvas","Vidutinis","Gyvybei pavojingas be požymių"],0,"Kalba žodžiais, KD > 30, ŠSD > 120, SpO₂ < 90 %, PEF ≤ 50 % – sunkus (GINA)."],
+  ["Pirmieji vaistai?",["SABA (ir ipratropis) per purkštuvą, sisteminiai kortikosteroidai, O₂ iki SpO₂ 93–95 %","Tik antibiotikai","BAB","Raminamieji"],0,"Sunkiu atveju svarstomas MgSO₄ i/v."],
+  ["Kuris požymis rodytų gyvybei pavojingą paūmėjimą?",["„Tyli“ krūtinė, PaCO₂ normalus ar ↑, sumišimas","Švokštimas","ŠSD 100","Kosulys"],0,"Normalus ar ↑ PaCO₂ – kvėpavimo raumenų išsekimas."]]}
+],
+"plauciu-vezys":[
+ {t:"Kraujo atkosėjimas rūkančiam", s:"64 m. vyras, rūko 45 pakmečius. 2 mėn. kosulys su kraujo gyslelėmis, svorio kritimas 6 kg. Krūtinės Ro – dešinio plaučio šaknies praplatėjimas ir viršutinės skilties atelektazė.", st:[
+  ["Kas įtariama?",["Centrinis plaučių vėžys","Pneumonija","Tuberkuliozė – tik","Bronchektazės"],0,"Rūkymas, hemoptizė, svorio kritimas, šaknies masė ir atelektazė."],
+  ["Kuris tyrimas morfologinei diagnozei?",["Bronchoskopija su endobronchine biopsija","Skreplių pasėlis","Spirometrija","Tik KT"],0,"Centrinis matomas navikas – endobronchinė biopsija."],
+  ["Kuris tyrimas stadijavimui (limfmazgiams ir metastazėms)?",["KT su kontrastu, PET/KT, EBUS-TBAA","Tik Ro","Pilvo UG","EKG"],0,"Smegenų metastazėms – MRT."]]},
+ {t:"Hiponatremija ir šaknies masė", s:"60 m. rūkanti moteris: silpnumas, sumišimas. Na⁺ 122 mmol/l, euvolemija. KT – didelė kairės plaučių šaknies masė su tarpuplaučio limfmazgiais; kepenyse – metastazės.", st:[
+  ["Tikėtiniausias tipas?",["Smulkiųjų ląstelių plaučių vėžys","Adenokarcinoma","Plokščiųjų ląstelių","Karcinoidas"],0,"Centrinis, agresyvus, ankstyvos metastazės; SIADH – dažnas paraneoplastinis sindromas."],
+  ["Kaip klasifikuojamas išplitimas?",["Išplitęs (IV st.)","Neišplitęs (I–III st.)","I stadija","Lokalus"],0,"Kepenų metastazės – išplitęs."],
+  ["Gydymas?",["Chemoterapija (platinos preparatas + etopozidas) + imunoterapija","Operacija","EGFR TKI","Tik spindulinis"],0,"Neišplitęs – chemospindulinis."]]}
+],
+kvn:[
+ {t:"LOPL paūmėjimas ir deguonis", s:"70 m. vyras su sunkia LOPL: 3 d. didėja dusulys, pūlingi skrepliai. SpO₂ 82 %, KD 28. Kraujo dujos: pH 7,31, PaCO₂ 62 mmHg, PaO₂ 48 mmHg, HCO₃⁻ 31.", st:[
+  ["Koks KN tipas?",["Lėtinis paūmėjęs hiperkapninis (II tipo)","Ūminis hipokseminis","Lėtinis kompensuotas","Norma"],0,"HCO₃⁻ ↑ rodo lėtinę eigą, pH ↓ – dekompensaciją."],
+  ["Kokia tikslinė SpO₂ ir priemonė?",["88–92 % per Venturi kaukę","98–100 % per kaukę su rezervuaru","94–98 % per nosies kaniules 10 l/min","Deguonies neskirti"],0,"Per daug O₂ didina PaCO₂."],
+  ["Kas skiriama, jei pH ≤ 7,3 išlieka?",["Neinvazinė ventiliacija","Tik daugiau deguonies","Raminamieji","Nieko"],0,"NIV mažina intubacijų skaičių ir mirštamumą sergant LOPL."]]},
+ {t:"Pneumonija ir hipoksemija", s:"45 m. moteris su abipuse pneumonija: SpO₂ 86 % su nosies kaniulėmis 4 l/min, KD 30, sąmoninga, bendradarbiauja. Kraujo dujos: PaO₂ 52, PaCO₂ 32, pH 7,46.", st:[
+  ["KN tipas?",["Ūminis hipokseminis (I tipo)","Hiperkapninis","Lėtinis","Mišrus lėtinis"],0,"PaO₂ < 60, PaCO₂ ↓."],
+  ["Kokia tinkamiausia oksigenacijos priemonė?",["Didelės tėkmės deguonies terapija (HFNC)","Venturi 24 %","Paprasta kaukė 3 l/min","Deguonies nereikia"],0,"Lengvas–vidutinis ūminis KN, sąmoninga, bendradarbiauja."],
+  ["Kada intubuoti?",["Sutrikus sąmonei, esant šokui, KD > 35, PaO₂/FiO₂ < 200 ir blogėjant","Iškart visiems","Niekada","Tik esant PaCO₂ 40"],0,"Stebėti ne tik SpO₂, bet ir KD bei kvėpavimo darbą."]]}
+],
+"ritmas-vaistai":[
+ {t:"Vaistų pasirinkimas PV", s:"58 m. vyras, sveika širdis (IF 60 %, IŠL nėra). Prieš 3 val. prasidėjo PV, ŠSD 125, AKS 130/80, gerai jaučiasi. CHA₂DS₂-VASc 0.", st:[
+  ["Koks vaistas medikamentinei kardioversijai tinkamiausias?",["Propafenonas (ar flekainidas)","Amiodaronas per os 2 mėn.","Digoksinas","Verapamilis"],0,"Ic klasė – kai nėra struktūrinės ar išeminės širdies ligos."],
+  ["Jei būtų ŠN su IF 30 % – koks vaistas?",["Amiodaronas","Flekainidas","Propafenonas","Dronedaronas"],0,"Ic klasė draudžiama esant ↓ IF ar IŠL."],
+  ["Ar reikia ilgalaikės antikoaguliacijos (CHA₂DS₂-VASc 0)?",["Ne","Taip, visiems","Tik aspirinas","Varfarinas"],0,"0 balų vyrams – nereikia; po kardioversijos sprendžiama individualiai (< 24–48 val.)."]]}
+],
+"ritmas-egz":[
+ {t:"Egzamino situacija: siaurų QRS tachikardija", s:"38 m. vyras SPS: staigus plakimas 180 k/min, AKS 80/50, prakaituoja, svaigsta. EKG – reguliari siaurų QRS tachikardija.", st:[
+  ["Ar pacientas stabilus?",["Ne – hipotenzija, šoko požymiai","Taip","Iš EKG nustatyti negalima","Tik jei ŠSD > 200"],0,"Nestabilumo požymiai: hipotenzija, sąmonės sutrikimas, šokas, išemija, ŠN."],
+  ["Gydymas?",["Sinchronizuota elektrinė kardioversija","Vagaliniai mėginiai","Verapamilis per os","Stebėti"],0,"Nestabilus – iškart kardioversija."],
+  ["Po kardioversijos EKG – trumpas PR ir delta banga. Diagnozė?",["WPW sindromas","Brugados sindromas","Ilgo QT sindromas","KHKB"],0,"Radikalus gydymas – papildomo pluošto abliacija."]]}
+]
+});
+
+/* ---------- Claude AI (veikia atidarius per Claude) ---------- */
+let AI=null;
+try{ if(window.claude && typeof window.claude.use==="function") window.claude.use("sample").then(s=>{ AI=s||null; if(AI && typeof render==="function" && (st.mode==="test"||st.mode==="cases")) render(); }).catch(()=>{}); }catch(e){}
+function topicText(t,max){ const d=document.createElement("div"); d.innerHTML=(t.notes||"").replace(/<img[^>]*>/g,"").replace(/<figure[\s\S]*?<\/figure>/g,""); return d.textContent.replace(/\s+/g," ").trim().slice(0,max||22000); }
+const AI_ERR = c => c==="not_granted"||c==="sampling_disabled"||c==="not_declared"||c==="capability_disabled"||c==="capability_removed" ? "Claude šiame puslapyje neleidžiamas." : c==="rate_limited" ? "Per daug užklausų – pabandyk po kelių minučių." : c==="invalid_json" ? "Claude atsakymo nepavyko perskaityti – bandyk dar kartą." : "Nepavyko – bandyk dar kartą.";
+function validQ(q){ return q && typeof q.q==="string" && Array.isArray(q.o) && q.o.length>=3 && q.o.length<=5 && q.o.every(x=>typeof x==="string") && Number.isInteger(q.c) && q.c>=0 && q.c<q.o.length; }
+function relatedPool(t){
+  const M=curMod(); if(!M) return [];
+  const a=M.areas.find(x=>x.id===st.area); if(!a) return [];
+  const s=a.subs? a.subs.find(x=>x.id===st.sub):null;
+  const near=(s?s.topics:[]).filter(x=>x.id!==t.id);
+  const far=allTopics(a).filter(x=>x.id!==t.id && !near.includes(x));
+  const pick=list=>list.flatMap(x=>(x.test||[]).map(q=>Object.assign({},q,{src:x.title})));
+  return pick(near).concat(pick(far));
+}
+
 function renderTest(pane,t){
-  const sk="best:"+t.id;
-  let ans={};
+  const sk="best:"+t.id, xk="xq:"+t.id;
+  let ans={}, related=[], busy=false, msg="";
+  const all=()=>t.test.concat(store.get(xk,[]), related);
+  function moreBar(){
+    const saved=store.get(xk,[]).length;
+    return `<div class="more"><div class="more-h"><b>Nori daugiau klausimų?</b><span class="pill">${t.test.length} pagrindiniai${saved?" + "+saved+" sukurti":""}${related.length?" + "+related.length+" iš susijusių temų":""}</span></div>
+    <div class="bar">${AI?`<button class="btn go" id="genq" ${busy?"disabled":""}>✨ Sukurti 5 naujus klausimus su Claude</button>`:""}
+    <button class="btn" id="relq" ${busy?"disabled":""}>+ 5 klausimai iš susijusių temų</button>
+    ${saved?`<button class="btn" id="clrq">Ištrinti sukurtus</button>`:""}</div>
+    ${!AI?`<p class="note">Naujus klausimus pagal šios temos konspektą kuria Claude, kai svetainė atidaryta per Claude. Čia gali pridėti klausimų iš kitų tos pačios srities temų.</p>`:""}
+    <p class="note" aria-live="polite">${esc(msg)}</p></div>`;
+  }
   function draw(){
-    const n=t.test.length, done=Object.keys(ans).length, right=Object.entries(ans).filter(([i,a])=>t.test[i].c===a).length;
+    const qs=all(), n=qs.length, done=Object.keys(ans).length, right=Object.entries(ans).filter(([i,a])=>qs[i].c===a).length;
     const best=store.get(sk,null);
-    pane.innerHTML=`<div class="score"><span><b>${right} / ${n}</b> <span class="pill">teisingai · atsakyta ${done}</span></span><span class="pill">${best!==null?"Geriausias: "+best+" / "+n:""}</span></div>
-    ${t.test.map((q,i)=>{const a=ans[i];return `<div class="qcard"><div class="qn">${i+1} klausimas</div><h4>${esc(q.q)}</h4><div class="opts">${q.o.map((o,j)=>{
+    pane.innerHTML=`<div class="score"><span><b>${right} / ${n}</b> <span class="pill">teisingai · atsakyta ${done}</span></span><span class="pill">${best!==null?"Geriausias: "+best+" / "+t.test.length:""}</span></div>
+    ${qs.map((q,i)=>{const a=ans[i];return `<div class="qcard"><div class="qn">${i+1} klausimas${i>=t.test.length?` <span class="qsrc">${q.src?"iš temos: "+esc(q.src):"✨ sukurta su Claude"}</span>`:""}</div><h4>${esc(q.q)}</h4><div class="opts">${q.o.map((o,j)=>{
       let cls=""; if(a!==undefined){ if(j===q.c) cls="ok"; else if(j===a) cls="no"; }
-      return `<button class="opt ${cls}" data-q="${i}" data-o="${j}" ${a!==undefined?"disabled":""}><span class="l">${"ABCD"[j]}</span><span>${esc(o)}</span></button>`;}).join("")}</div>${a!==undefined?`<div class="expl"><b>${a===q.c?"Teisingai.":"Neteisingai."}</b> ${esc(q.e)}</div>`:""}</div>`}).join("")}
-    ${done===n?`<div class="result"><h3>Rezultatas: ${right} / ${n} (${Math.round(right/n*100)} %)</h3><p>${right/n>=.85?"Puikiai – tema įsisavinta.":right/n>=.6?"Neblogai. Pakartok klaidingus klausimus ir korteles.":"Grįžk į konspektą ir korteles, tada bandyk dar kartą."}</p><p style="margin-top:12px"><button class="btn" id="again">Bandyti iš naujo</button></p></div>`:""}`;
+      return `<button class="opt ${cls}" data-q="${i}" data-o="${j}" ${a!==undefined?"disabled":""}><span class="l">${"ABCDE"[j]}</span><span>${esc(o)}</span></button>`;}).join("")}</div>${a!==undefined?`<div class="expl"><b>${a===q.c?"Teisingai.":"Neteisingai."}</b> ${esc(q.e||"")}</div>`:""}</div>`}).join("")}
+    ${done===n?`<div class="result"><h3>Rezultatas: ${right} / ${n} (${Math.round(right/n*100)} %)</h3><p>${right/n>=.85?"Puikiai – tema įsisavinta.":right/n>=.6?"Neblogai. Pakartok klaidingus klausimus ir korteles.":"Grįžk į konspektą ir korteles, tada bandyk dar kartą."}</p><p style="margin-top:12px"><button class="btn" id="again">Bandyti iš naujo</button></p></div>`:""}
+    ${moreBar()}`;
     pane.querySelectorAll(".opt:not([disabled])").forEach(b=>b.onclick=()=>{ans[b.dataset.q]=+b.dataset.o;
-      if(Object.keys(ans).length===n){const r=Object.entries(ans).filter(([i,a])=>t.test[i].c===a).length; if(best===null||r>best) store.set(sk,r);}
+      const base=t.test.length; const baseDone=Object.keys(ans).filter(i=>+i<base);
+      if(baseDone.length===base){const r=baseDone.filter(i=>t.test[i].c===ans[i]).length; if(best===null||r>best) store.set(sk,r);}
       const y=window.scrollY; draw(); window.scrollTo(0,y);});
-    const ag=$("#again"); if(ag) ag.onclick=()=>{ans={};draw();window.scrollTo(0,0)};
+    const ag=$("#again"); if(ag) ag.onclick=()=>{ans={};msg="";draw();window.scrollTo(0,0)};
+    const rq=$("#relq"); if(rq) rq.onclick=()=>{
+      const have=new Set(all().map(q=>q.q)); const pool=relatedPool(t).filter(q=>!have.has(q.q));
+      if(!pool.length){ msg="Susijusių temų klausimų nebeliko."; draw(); return; }
+      for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+      related=related.concat(pool.slice(0,5)); msg="Pridėta "+Math.min(5,pool.length)+" klausimai apačioje."; const y=window.scrollY; draw(); window.scrollTo(0,y);
+    };
+    const cq=$("#clrq"); if(cq) cq.onclick=()=>{ if(!cq.classList.contains("arm")){cq.classList.add("arm");cq.textContent="Tikrai ištrinti?";return;} store.set(xk,[]); ans={}; msg="Sukurti klausimai ištrinti."; draw(); };
+    const gq=$("#genq"); if(gq) gq.onclick=async()=>{
+      busy=true; msg="Claude kuria klausimus pagal konspektą… (gali užtrukti iki minutės)"; const y=window.scrollY; draw(); window.scrollTo(0,y);
+      const existing=all().map(q=>"- "+q.q).join("\n").slice(0,6000);
+      const prompt=`Tu esi LSMU medicinos fakulteto 4 kurso egzamino klausimų rengėjas. Remdamasis TIK žemiau pateiktu konspektu, sukurk 5 NAUJUS vieno teisingo atsakymo klausimus lietuvių kalba temai „${t.title}“. Bent 3 klausimai turi būti trumpos klinikinės situacijos (pacientas, simptomai, tyrimų radiniai → diagnozė, tyrimas ar gydymas). Kiekvienas klausimas: 4 tikėtini atsakymų variantai, tik vienas teisingas, teisingo atsakymo vieta įvairi, trumpas paaiškinimas (1–2 sakiniai). Nekartok šių jau esamų klausimų:\n${existing}\n\nAtsakyk TIK JSON masyvu be jokio kito teksto, formatas: [{"q":"klausimas","o":["A","B","C","D"],"c":0,"e":"paaiškinimas"}] (c – teisingo varianto indeksas nuo 0).\n\nKONSPEKTAS:\n${topicText(t)}`;
+      try{
+        const res=await AI.json(prompt,{cache:false});
+        const arr=(Array.isArray(res)?res:(res&&Array.isArray(res.questions)?res.questions:[])).filter(validQ).map(q=>({q:q.q,o:q.o,c:q.c,e:q.e||""}));
+        if(!arr.length) throw {code:"invalid_json"};
+        store.set(xk,store.get(xk,[]).concat(arr)); msg="Pridėta "+arr.length+" nauji klausimai apačioje. Jie išsaugoti šiame įrenginyje.";
+      }catch(e){ msg=AI_ERR(e&&e.code); if(e&&["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(e.code)) AI=null; }
+      busy=false; const y2=window.scrollY; draw(); window.scrollTo(0,y2);
+    };
+  }
+  draw();
+}
+
+/* ---------- klinikinės situacijos ---------- */
+function renderCases(pane,t){
+  const xk="xc:"+t.id;
+  const list=()=>(CASES[t.id]||[]).concat(store.get(xk,[]));
+  let ans={}, busy=false, msg="", perms={};
+  const perm=(k,n)=>perms[k]||(perms[k]=(()=>{const p=[...Array(n).keys()];for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[p[i],p[j]]=[p[j],p[i]];}return p;})());
+  function caseHtml(c,ci){
+    const steps=c.st||[]; let html=`<div class="case"><div class="case-h"><span class="qn">Situacija ${ci+1}${c.ai?` <span class="qsrc">✨ sukurta su Claude</span>`:""}</span><h3>${esc(c.t)}</h3></div><div class="case-s">${esc(c.s)}</div>`;
+    let right=0, done=0;
+    for(let si=0;si<steps.length;si++){
+      const [q,o,cor,e]=steps[si]; const k=ci+":"+si; const a=ans[k];
+      html+=`<div class="step"><div class="qn">${si+1} žingsnis iš ${steps.length}</div><h4>${esc(q)}</h4><div class="opts">${perm(k,o.length).map((j,pos)=>{const x=o[j]; let cls=""; if(a!==undefined){ if(j===cor) cls="ok"; else if(j===a) cls="no"; } return `<button class="opt ${cls}" data-c="${ci}" data-s="${si}" data-o="${j}" ${a!==undefined?"disabled":""}><span class="l">${"ABCDE"[pos]}</span><span>${esc(x)}</span></button>`;}).join("")}</div>${a!==undefined?`<div class="expl"><b>${a===cor?"Teisingai.":"Neteisingai."}</b> ${esc(e||"")}</div>`:""}</div>`;
+      if(a===undefined) break; done++; if(a===cor) right++;
+    }
+    if(done===steps.length) html+=`<div class="case-end">Situacija baigta: <b>${right} / ${steps.length}</b> žingsnių teisingai. <button class="btn" data-reset="${ci}">Spręsti iš naujo</button></div>`;
+    return html+`</div>`;
+  }
+  function draw(){
+    const cs=list();
+    pane.innerHTML=`<div class="call tip"><strong>Kaip spręsti</strong>Perskaityk situaciją ir atsakinėk žingsnis po žingsnio – kitas žingsnis atsiveria tik atsakius į ankstesnį.</div>
+    ${cs.length?cs.map(caseHtml).join(""):`<div class="empty"><b>Šiai temai situacijų dar nėra.</b>${AI?" Sukurk naują su Claude žemiau.":" Paprašyk Claude pokalbyje, kad jų pridėtų, arba atsidaryk svetainę per Claude ir sukurk situaciją pats."}</div>`}
+    <div class="more"><div class="bar">${AI?`<button class="btn go" id="genc" ${busy?"disabled":""}>✨ Nauja situacija su Claude</button>`:""}${store.get(xk,[]).length?`<button class="btn" id="clrc">Ištrinti sukurtas</button>`:""}</div>
+    ${!AI?`<p class="note">Naujas situacijas pagal konspektą kuria Claude, kai svetainė atidaryta per Claude.</p>`:""}<p class="note" aria-live="polite">${esc(msg)}</p></div>`;
+    pane.querySelectorAll(".opt[data-c]:not([disabled])").forEach(b=>b.onclick=()=>{ans[b.dataset.c+":"+b.dataset.s]=+b.dataset.o; const y=window.scrollY; draw(); window.scrollTo(0,y);});
+    pane.querySelectorAll("[data-reset]").forEach(b=>b.onclick=()=>{const ci=b.dataset.reset; Object.keys(ans).forEach(k=>{if(k.startsWith(ci+":")) delete ans[k];}); const y=window.scrollY; draw(); window.scrollTo(0,y);});
+    const cc=$("#clrc"); if(cc) cc.onclick=()=>{ if(!cc.classList.contains("arm")){cc.classList.add("arm");cc.textContent="Tikrai ištrinti?";return;} store.set(xk,[]); ans={}; msg="Sukurtos situacijos ištrintos."; draw(); };
+    const gc=$("#genc"); if(gc) gc.onclick=async()=>{
+      busy=true; msg="Claude kuria klinikinę situaciją… (gali užtrukti iki minutės)"; const y=window.scrollY; draw(); window.scrollTo(0,y);
+      const existing=list().map(c=>"- "+c.t+": "+c.s.slice(0,120)).join("\n");
+      const prompt=`Tu esi LSMU medicinos fakulteto 4 kurso dėstytojas. Remdamasis TIK žemiau pateiktu konspektu, sukurk VIENĄ naują realistišką klinikinę situaciją lietuvių kalba temai „${t.title}“. Situacija: paciento amžius, lytis, skundai, anamnezė, apžiūra ir svarbūs tyrimų radiniai (3–5 sakiniai). Tada 3–4 nuoseklūs žingsniai (pvz., diagnozė → papildomas tyrimas → pradinis gydymas → tolesnė taktika arba komplikacija). Kiekvienas žingsnis: klausimas, 4 tikėtini variantai, vienas teisingas (vieta įvairi), trumpas paaiškinimas. Situacija turi skirtis nuo šių esamų:\n${existing||"(nėra)"}\n\nAtsakyk TIK JSON objektu be kito teksto: {"t":"trumpas pavadinimas","s":"situacijos aprašymas","st":[{"q":"klausimas","o":["A","B","C","D"],"c":0,"e":"paaiškinimas"}]}\n\nKONSPEKTAS:\n${topicText(t)}`;
+      try{
+        const r=await AI.json(prompt,{cache:false});
+        const steps=(r&&Array.isArray(r.st)?r.st:[]).filter(validQ).map(q=>[q.q,q.o,q.c,q.e||""]);
+        if(!r||typeof r.t!=="string"||typeof r.s!=="string"||steps.length<2) throw {code:"invalid_json"};
+        store.set(xk,store.get(xk,[]).concat([{t:r.t,s:r.s,st:steps,ai:1}])); msg="Nauja situacija pridėta apačioje. Ji išsaugota šiame įrenginyje.";
+      }catch(e){ msg=AI_ERR(e&&e.code); if(e&&["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(e.code)) AI=null; }
+      busy=false; const y2=window.scrollY; draw(); window.scrollTo(0,y2);
+    };
   }
   draw();
 }
