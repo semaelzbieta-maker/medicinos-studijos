@@ -5811,7 +5811,7 @@ const AREAS = [
  {id:"pulmonologija", name:"Pulmonologija", c:"var(--lung)", cs:"var(--lung-soft)", blurb:"12 poskyrių, temos dar neįkeltos",
   subs:[
    {id:"obstrukcines", name:"Obstrukcinių plaučių ligų diagnostikos ir gydymo principai", topics:[
-     {id:"astma-lopl", title:"Astma ir LOPL: diagnostika, klasifikacija, gydymas, paūmėjimai", src:"Paskaita, LSMU Pulmonologijos klinika, 2026–2027 · 59 skaidrės", notes:NOTES_OBS, cards:CARDS_OBS, test:TEST_OBS}
+     {id:"astma-lopl", title:"Astma ir LOPL: diagnostika, klasifikacija, gydymas, paūmėjimai", src:"Paskaita, LSMU Pulmonologijos klinika, 2026–2027 · 59 skaidrės", notes:NOTES_OBS, page:"konspektai/astma-lopl.html", cards:CARDS_OBS, test:TEST_OBS}
    ]},
    {id:"funkciniai", name:"Funkciniai tyrimai kvėpavimo organų ligoms diagnozuoti", topics:[]},
    {id:"navikai", name:"Plaučių navikų diagnostikos ir gydymo principai, kraujavimas iš plaučių", topics:[
@@ -6063,7 +6063,7 @@ function render(){
   v.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{st.mode=b.dataset.tab;render()});
   v.querySelector("[data-back]").onclick=()=>{st.topic=null;render();window.scrollTo(0,0)};
   const pane=$("#pane");
-  if(st.mode==="notes"){ pane.innerHTML=`<div class="notes">${t.notes}</div>`; glossify(pane,t); }
+  if(st.mode==="notes"){ if(t.page){ pane.innerHTML=`<p style="margin:0 0 8px;font-size:13.5px"><a href="${t.page}" target="_blank" rel="noopener">Atidaryti konspektą atskirame lange ↗</a></p><iframe class="notes-page" src="${t.page}" title="${esc(t.title)}" loading="eager" style="display:block;width:100%;height:80vh;border:1px solid var(--line);border-radius:var(--radius);background:#fbf3d6"></iframe>`; } else { pane.innerHTML=`<div class="notes">${t.notes}</div>`; glossify(pane,t); } }
   else if(st.mode==="cases") renderCases(pane,t);
   else if(st.mode==="my"){ pane.innerHTML=sharedBox("topic:"+t.id)+noteBox("topic:"+t.id,"Mano asmeniniai užrašai","Matai tik tu – saugoma šiame įrenginyje ir naršyklėje. Norėdama perkelti į kitą įrenginį, atsisiųsk ir įkelk ten."); bindNotes(pane); bindShared(pane); }
   else if(st.mode==="cards") renderCards(pane,t);
